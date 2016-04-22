@@ -23,7 +23,7 @@ namespace ZeroImage.Controllers
                         "Server = (localdb)\\MSSQLLocalDB;Database=ZiDB_DEV; Trusted_Connection = True;")
                 )
             {
-                var user = new User { Name = "TESTNAMN22", Name2 = "123422" };
+                var user = new User { Name = "TESTNAMN22", Identifier = "123422" };
                 context.Users.Add(user);
                 context.SaveChanges();
             }

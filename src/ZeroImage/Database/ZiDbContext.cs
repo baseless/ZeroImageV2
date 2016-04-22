@@ -12,6 +12,8 @@ namespace ZeroImage.Database
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<File> Files { get; set; }
+        //public DbSet<FriendRequest> Requests { get; set; }
 
         public ZiDbContext(string connectionString) : base(connectionString)
         {

@@ -10,7 +10,7 @@ namespace ZeroImage.Services
         {
             using (var rng = new RNGCryptoServiceProvider())
             {
-                var data = new byte[24];
+                var data = new byte[12];
                 rng.GetBytes(data);
                 return Convert.ToBase64String(data);
             } 
@@ -18,9 +18,8 @@ namespace ZeroImage.Services
 
         public static string Hash(string input, string salt)
         {
-            var inputBytes = Encoding.UTF8.GetBytes(input);
-            var sha = new SHA512Managed();
-            var result = sha.ComputeHash(inputBytes);
+            var inputBytes = Encoding.UTF8.GetBytes(string.Concat(salt,input));
+            var result = new SHA512Managed().ComputeHash(inputBytes);
             return Encoding.UTF8.GetString(result);
         }
     }
