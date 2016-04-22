@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <base href="/" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ZeroImage - The privacy-centered image gallery</title>
+    <link href="/lib/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/bundle.css" rel="stylesheet"/>
+    <script src="/lib/jquery.min.js"></script>
+    <script src="/lib/bootstrap.js"></script>
+    <script src="/lib/es6-shim.min.js"></script>
+    <script src="/lib/system-polyfills.js"></script>
+    <script src="/lib/shims_for_IE.js"></script>
+    <script src="/lib/angular2-polyfills.js"></script>
+    <script src="/lib/system.js"></script>
+    <script src="/lib/Rx.js"></script>
+    <script src="/lib/angular2.dev.js"></script>
+    <script src="/lib/router.dev.js"></script>
+    <script src="/lib/http.dev.js"></script>
+    <script>
+        System.config({ packages: { app: { format: 'register', defaultExtension: 'js' } } });
+        System.import('app/main').then(null, console.error.bind(console));
+    </script>
+</head>
+<body>
+    <div class="container-fluid">
+        <zero-image>
+            <div class="row">
+                <div class="col-lg-12 load-box">
+                    <img alt="Loading" src="img/loading.gif"/>
+                    <p>Loading..</p>
+                </div>
+            </div>
+        </zero-image>
+    </div>
+</body>
+</html>
