@@ -9,8 +9,8 @@ using ZeroImage.Models;
 
 namespace ZeroImage.Controllers
 {
-    [Route("api/[controller]"), Authorize]
-    public class AccountController : Controller
+    [Route("api/[controller]")]
+    public class AccountController : RootController
     {
         private readonly ZiDbContext _context;
 

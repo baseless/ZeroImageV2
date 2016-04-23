@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Authentication.Cookies;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Http;
@@ -38,6 +39,14 @@ namespace ZeroImage
             app.UseIISPlatformHandler();
             app.UseDefaultFiles();
             app.UseStaticFiles();
+
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = false,
+                LoginPath = new PathString("")
+            });
+
             app.UseMvc();
 
             if (env.IsDevelopment())
