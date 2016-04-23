@@ -44,7 +44,7 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
                 };
                 LoginComponent.prototype.doLogin = function () {
                     var _this = this;
-                    console.log("authenticated status: " + this.authService.isAuthenticated());
+                    //console.log("authenticated status: " + this.authenticated);
                     this.processing = true;
                     if (this.loginForm.valid) {
                         this.authService.authenticate(this.loginForm.value.userName, this.loginForm.value.password)
@@ -53,7 +53,28 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
                                 _this.errorMessage = "Login failed";
                             }
                             else {
-                                _this.authService.setAuthenticated(true);
+                                _this.router.navigate(["Home"]);
+                            }
+                            console.log("[AuthService.authenticate] response for '" + _this.loginForm.value.userName + "': " + JSON.stringify(data));
+                        }, function (error) { console.log(error); }, function () { }); });
+                    }
+                    else {
+                        this.errorMessage = "Login failed";
+                    }
+                    this.processing = false;
+                };
+                LoginComponent.prototype.doLoginOld = function () {
+                    var _this = this;
+                    //console.log("authenticated status: " + this.authService.isAuthenticated());
+                    this.processing = true;
+                    if (this.loginForm.valid) {
+                        this.authService.authenticate(this.loginForm.value.userName, this.loginForm.value.password)
+                            .then(function (result) { return result.subscribe(function (data) {
+                            if (!data.result) {
+                                _this.errorMessage = "Login failed";
+                            }
+                            else {
+                                //this.authService.setAuthenticated(true);
                                 _this.router.navigate(["Home"]);
                             }
                             console.log("[AuthService.authenticate] response for '" + _this.loginForm.value.userName + "': " + JSON.stringify(data));

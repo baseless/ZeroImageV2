@@ -1,4 +1,4 @@
-System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxjs/add/operator/catch"], function(exports_1, context_1) {
+System.register(["angular2/core", "angular2/http", "rxjs/Observable", "rxjs/add/operator/map", "rxjs/add/operator/catch", "rxjs/add/operator/share"], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -10,7 +10,7 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, http_1;
+    var core_1, http_1, Observable_1;
     var AuthService;
     return {
         setters:[
@@ -20,23 +20,32 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
             function (http_1_1) {
                 http_1 = http_1_1;
             },
+            function (Observable_1_1) {
+                Observable_1 = Observable_1_1;
+            },
             function (_1) {},
-            function (_2) {}],
+            function (_2) {},
+            function (_3) {}],
         execute: function() {
             AuthService = (function () {
                 function AuthService(http) {
+                    var _this = this;
                     this.http = http;
-                    this.authenticated = false;
+                    this.auth$ = new Observable_1.Observable(function (observer) {
+                        _this.authObserver = observer;
+                        _this.authObserver.next(false);
+                    }).share();
                 }
-                AuthService.prototype.isAuthenticated = function () {
-                    return this.authenticated;
-                };
-                AuthService.prototype.setAuthenticated = function (auth) {
-                    this.authenticated = auth;
-                };
                 AuthService.prototype.authenticate = function (userName, password) {
+                    var _this = this;
                     return Promise.resolve(this.http.get("/api/authenticate/" + userName + "/" + password)
-                        .map(function (res) { return res.json(); }));
+                        .map(function (res) {
+                        var resJson = res.json();
+                        if (resJson.result === true) {
+                            _this.authObserver.next(true);
+                        }
+                        return resJson;
+                    }));
                 };
                 AuthService.prototype.exists = function (userName) {
                     return Promise.resolve(this.http.get("/api/account/exists/" + userName)

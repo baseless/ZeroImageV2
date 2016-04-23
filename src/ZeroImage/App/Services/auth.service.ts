@@ -1,27 +1,29 @@
 ﻿import { Injectable }                   from "angular2/core";
 import { Http, Response, Headers }      from "angular2/http"
 import { Observable }                   from "rxjs/Observable";
+import { Observer }                     from "rxjs/Observer";
 import "rxjs/add/operator/map"
 import "rxjs/add/operator/catch"
+import "rxjs/add/operator/share"
 
 @Injectable()
 export class AuthService {
+    auth$: Observable<boolean>;
+    private authObserver: Observer<boolean>;
 
-    private authenticated: boolean;
-
-    constructor(private http: Http) { this.authenticated = false; }
-
-    isAuthenticated() {
-        return this.authenticated;
-    }
-
-    setAuthenticated(auth: boolean) {
-        this.authenticated = auth;
+    constructor(private http: Http) {
+        this.auth$ = new Observable(observer => { this.authObserver = observer; this.authObserver.next(false); }).share();
     }
 
     authenticate(userName: string, password: string) {
         return Promise.resolve(this.http.get(`/api/authenticate/${userName}/${password}`)
-            .map(res => res.json())
+            .map(res => {
+                let resJson = res.json();
+                if (resJson.result === true) {
+                    this.authObserver.next(true);
+                }
+                return resJson;
+            })
         );
     }
 

@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit {
     }
 
     doLogin() {
-        console.log("authenticated status: " + this.authService.isAuthenticated());
+        //console.log("authenticated status: " + this.authenticated);
         this.processing = true;
         if (this.loginForm.valid) {
             this.authService.authenticate(this.loginForm.value.userName, this.loginForm.value.password)
@@ -35,7 +35,29 @@ export class LoginComponent implements OnInit {
                         if (!data.result) {
                             this.errorMessage = "Login failed";
                         } else {
-                            this.authService.setAuthenticated(true);
+                            this.router.navigate(["Home"]);
+                        }
+                        console.log(`[AuthService.authenticate] response for '${this.loginForm.value.userName}': ${JSON.stringify(data)}`);
+                    },
+                    error => { console.log(error); }, () => { }
+                ));
+        } else {
+            this.errorMessage = "Login failed";
+        }
+        this.processing = false;
+    }
+
+    doLoginOld() {
+        //console.log("authenticated status: " + this.authService.isAuthenticated());
+        this.processing = true;
+        if (this.loginForm.valid) {
+            this.authService.authenticate(this.loginForm.value.userName, this.loginForm.value.password)
+                .then(result => result.subscribe(
+                    data => {
+                        if (!data.result) {
+                            this.errorMessage = "Login failed";
+                        } else {
+                            //this.authService.setAuthenticated(true);
                             this.router.navigate(["Home"]);
                         }
                         console.log(`[AuthService.authenticate] response for '${this.loginForm.value.userName}': ${JSON.stringify(data)}`);

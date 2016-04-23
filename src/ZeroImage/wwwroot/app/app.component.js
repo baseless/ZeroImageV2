@@ -40,8 +40,11 @@ System.register(["angular2/core", "angular2/http", "./Components/Account/login.c
             }],
         execute: function() {
             AppComponent = (function () {
-                function AppComponent(router) {
+                function AppComponent(router, authService) {
+                    var _this = this;
                     this.router = router;
+                    this.authService = authService;
+                    authService.auth$.subscribe(function (res) { return _this.authenticated = res; });
                 }
                 AppComponent.prototype.isRouteActive = function (route) {
                     return this.router.isRouteActive(this.router.generate(route));
@@ -59,7 +62,7 @@ System.register(["angular2/core", "angular2/http", "./Components/Account/login.c
                         directives: [router_1.ROUTER_DIRECTIVES, register_component_1.RegisterComponent, login_component_1.LoginComponent, not_found_component_1.NotFoundComponent],
                         providers: [router_1.ROUTER_PROVIDERS, http_1.HTTP_PROVIDERS, auth_service_1.AuthService, core_1.provide(router_1.LocationStrategy, { useClass: router_1.HashLocationStrategy })]
                     }), 
-                    __metadata('design:paramtypes', [router_1.Router])
+                    __metadata('design:paramtypes', [router_1.Router, auth_service_1.AuthService])
                 ], AppComponent);
                 return AppComponent;
             }());

@@ -22,7 +22,11 @@ import { AuthService }                                                          
 })
 
 export class AppComponent {
-    constructor(private router: Router) { }
+    private authenticated: boolean;
+
+    constructor(private router: Router, private authService: AuthService) {
+        authService.auth$.subscribe(res => this.authenticated = res);
+    }
 
     isRouteActive(route) {
         return this.router.isRouteActive(this.router.generate(route));
