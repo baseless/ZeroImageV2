@@ -18,9 +18,9 @@ namespace ZeroImage.Services
 
         public static string Hash(string input, string salt)
         {
-            var inputBytes = Encoding.UTF8.GetBytes(string.Concat(salt,input));
+            var inputBytes = Encoding.ASCII.GetBytes(string.Concat(salt,input));
             var result = new SHA512Managed().ComputeHash(inputBytes);
-            return Encoding.UTF8.GetString(result);
+            return Encoding.ASCII.GetString(result);
         }
     }
 }

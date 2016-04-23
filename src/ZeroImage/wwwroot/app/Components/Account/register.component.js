@@ -45,12 +45,27 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../a
                     });
                 };
                 RegisterComponent.prototype.doRegister = function () {
+                    var _this = this;
                     this.processing = true;
                     var status = false;
                     if (this.registerForm.valid) {
+                        this.authService.register(this.registerForm.value.userName, this.registerForm.value.password)
+                            .then(function (result) { return result.subscribe(function (data) {
+                            if (!data.result) {
+                                _this.errorMessage = "registration failed";
+                            }
+                            else {
+                                _this.errorMessage = "registration succeeded";
+                            }
+                            console.log("[AuthService.register] response for '" + _this.registerForm.value.userName + "': " + JSON.stringify(data));
+                            _this.processing = false;
+                        }, function (error) {
+                            console.log(error);
+                            _this.processing = false;
+                        }, function () { }); });
                     }
                     else {
-                        this.errorMessage = "Login failed";
+                        this.errorMessage = "Registration failed";
                         this.processing = false;
                     }
                 };

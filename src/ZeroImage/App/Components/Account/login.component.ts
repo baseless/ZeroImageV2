@@ -3,6 +3,7 @@ import { ROUTER_DIRECTIVES }                            from "angular2/router";
 import { ControlGroup, FormBuilder, Validators }        from "angular2/common";
 import { AppValidators }                                from "../../app-validators";
 import { AuthService }                                  from "../../Services/auth.service";
+import {Router}                                         from "angular2/router"
 
 @Component({
     selector: "login",
@@ -15,7 +16,7 @@ export class LoginComponent implements OnInit {
     processing = false;
     errorMessage = null;
 
-    constructor(private fb: FormBuilder, private authService: AuthService) { }
+    constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) { }
     
     ngOnInit() {
         this.loginForm = this.fb.group({
@@ -25,29 +26,25 @@ export class LoginComponent implements OnInit {
     }
 
     doLogin() {
+        console.log("authenticated status: " + this.authService.isAuthenticated());
         this.processing = true;
-        let status = false;
         if (this.loginForm.valid) {
-            this.authService.exists(this.loginForm.value.userName)
+            this.authService.authenticate(this.loginForm.value.userName, this.loginForm.value.password)
                 .then(result => result.subscribe(
                     data => {
                         if (!data.result) {
                             this.errorMessage = "Login failed";
                         } else {
-                            this.errorMessage = "Login succeeded";
+                            this.authService.setAuthenticated(true);
+                            this.router.navigate(["Home"]);
                         }
-                        console.log(`[AuthService.exists] response for '${this.loginForm.value.userName}': ${JSON.stringify(data)}`);
-                        this.processing = false;
+                        console.log(`[AuthService.authenticate] response for '${this.loginForm.value.userName}': ${JSON.stringify(data)}`);
                     },
-                    error => {
-                        console.log(error);
-                        this.processing = false;
-                    },
-                    () => {}
+                    error => { console.log(error); }, () => {}
                 ));
         } else {
             this.errorMessage = "Login failed";
-            this.processing = false;
         }
+        this.processing = false;
     }
 }

@@ -12,7 +12,7 @@ System.register([], function(exports_1, context_1) {
                     return c.value.match("^[a-f]+$") ? null : { validateUserName: { valid: false } };
                 };
                 AppValidators.validatePassword = function (c) {
-                    return c.value.match("^[a-zA-Z]\w{8,60}$") ? null : { validatePassword: { valid: false } };
+                    return c.value.match("^[a-zA-Z]{8,60}$") ? null : { validatePassword: { valid: false } };
                 };
                 return AppValidators;
             }());

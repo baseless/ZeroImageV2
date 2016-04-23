@@ -26,12 +26,28 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
             AuthService = (function () {
                 function AuthService(http) {
                     this.http = http;
+                    this.authenticated = false;
                 }
-                AuthService.prototype.authenticate = function () {
+                AuthService.prototype.isAuthenticated = function () {
+                    return this.authenticated;
+                };
+                AuthService.prototype.setAuthenticated = function (auth) {
+                    this.authenticated = auth;
+                };
+                AuthService.prototype.authenticate = function (userName, password) {
+                    return Promise.resolve(this.http.get("/api/authenticate/" + userName + "/" + password)
+                        .map(function (res) { return res.json(); }));
                 };
                 AuthService.prototype.exists = function (userName) {
                     return Promise.resolve(this.http.get("/api/account/exists/" + userName)
                         .map(function (res) { return res.json(); }));
+                };
+                AuthService.prototype.register = function (userName, password) {
+                    var headers = new http_1.Headers();
+                    headers.append("Content-Type", "application/json");
+                    var body = { name: userName, identifier: password };
+                    console.log(JSON.stringify(body));
+                    return Promise.resolve(this.http.post("/api/account", JSON.stringify(body), headers).map(function (res) { return res.json(); }));
                 };
                 AuthService.prototype.handleError = function (error) {
                     //error handling

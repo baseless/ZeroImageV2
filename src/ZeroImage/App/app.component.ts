@@ -3,12 +3,14 @@ import { HTTP_PROVIDERS }                                                       
 import { LoginComponent }                                                                                       from "./Components/Account/login.component";
 import { RegisterComponent }                                                                                    from "./Components/Account/register.component";
 import { NotFoundComponent }                                                                                    from "./Components/Status/not-found.component";
+import { HomeComponent }                                                                                    from "./Components/Member/home.component";
 import { HashLocationStrategy, LocationStrategy, RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, Router }     from "angular2/router";
 import { AuthService }                                                                                          from "./Services/auth.service";
 
 @RouteConfig([
     { path: "/", name: "Login", component: LoginComponent, useAsDefault: true },
     { path: "/register", name: "Register", component: RegisterComponent },
+    { path: "/home", name: "Home", component: HomeComponent },
     { path: "/**", name: "NotFound", component: NotFoundComponent }
 ])
 

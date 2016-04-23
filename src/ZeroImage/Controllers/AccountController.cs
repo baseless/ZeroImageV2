@@ -1,7 +1,7 @@
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
 using ZeroImage.Database;
 using ZeroImage.Database.Entities;
@@ -27,22 +27,25 @@ namespace ZeroImage.Controllers
             {
                 result = _context.Users.Count(u => u.Name.Equals(userName)) > 0;
             }
-            return result ? Json(new { exists = true }) : Json(new { exists = false });
+            return result ? Json(new { result = true }) : Json(new { result = false });
         }
 
         [HttpPost, AllowAnonymous]
-        public async Task Create(UserApiModel model)
+        public async Task<IActionResult> Create([FromBody]string name)
         {
+            Debug.WriteLine("Received data: " + name);
+            /*
             if (ModelState.IsValid)
             {
                 var user = new User
                 {
                     Name = model.Name,
-                    Identifier = model.Identifier
+                    NewIdentifier = model.Identifier
                 };
                 _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-            }
+                await _context.SaveChangesAsync(); 
+            } */
+            return Json(new { result = false });
         }
     }
 }

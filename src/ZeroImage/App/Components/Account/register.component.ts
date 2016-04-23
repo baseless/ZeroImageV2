@@ -29,16 +29,15 @@ export class RegisterComponent implements OnInit {
         this.processing = true;
         let status = false;
         if (this.registerForm.valid) {
-            /*
-            this.authService.exists(this.loginForm.value.userName)
+            this.authService.register(this.registerForm.value.userName, this.registerForm.value.password)
                 .then(result => result.subscribe(
                     data => {
                         if (!data.result) {
-                            this.errorMessage = "Login failed";
+                            this.errorMessage = "registration failed";
                         } else {
-                            this.errorMessage = "Login succeeded";
+                            this.errorMessage = "registration succeeded";
                         }
-                        console.log(`[AuthService.exists] response for '${this.loginForm.value.userName}': ${JSON.stringify(data)}`);
+                        console.log(`[AuthService.register] response for '${this.registerForm.value.userName}': ${JSON.stringify(data)}`);
                         this.processing = false;
                     },
                     error => {
@@ -47,9 +46,8 @@ export class RegisterComponent implements OnInit {
                     },
                     () => { }
                 ));
-            */
         } else {
-            this.errorMessage = "Login failed";
+            this.errorMessage = "Registration failed";
             this.processing = false;
         }
     }

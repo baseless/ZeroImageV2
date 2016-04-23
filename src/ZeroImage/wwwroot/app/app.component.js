@@ -1,4 +1,4 @@
-System.register(["angular2/core", "angular2/http", "./Components/Account/login.component", "./Components/Account/register.component", "./Components/Status/not-found.component", "angular2/router", "./Services/auth.service"], function(exports_1, context_1) {
+System.register(["angular2/core", "angular2/http", "./Components/Account/login.component", "./Components/Account/register.component", "./Components/Status/not-found.component", "./Components/Member/home.component", "angular2/router", "./Services/auth.service"], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -10,7 +10,7 @@ System.register(["angular2/core", "angular2/http", "./Components/Account/login.c
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, http_1, login_component_1, register_component_1, not_found_component_1, router_1, auth_service_1;
+    var core_1, http_1, login_component_1, register_component_1, not_found_component_1, home_component_1, router_1, auth_service_1;
     var AppComponent;
     return {
         setters:[
@@ -28,6 +28,9 @@ System.register(["angular2/core", "angular2/http", "./Components/Account/login.c
             },
             function (not_found_component_1_1) {
                 not_found_component_1 = not_found_component_1_1;
+            },
+            function (home_component_1_1) {
+                home_component_1 = home_component_1_1;
             },
             function (router_1_1) {
                 router_1 = router_1_1;
@@ -47,6 +50,7 @@ System.register(["angular2/core", "angular2/http", "./Components/Account/login.c
                     router_1.RouteConfig([
                         { path: "/", name: "Login", component: login_component_1.LoginComponent, useAsDefault: true },
                         { path: "/register", name: "Register", component: register_component_1.RegisterComponent },
+                        { path: "/home", name: "Home", component: home_component_1.HomeComponent },
                         { path: "/**", name: "NotFound", component: not_found_component_1.NotFoundComponent }
                     ]),
                     core_1.Component({

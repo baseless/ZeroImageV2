@@ -10,7 +10,7 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, router_1, common_1, auth_service_1;
+    var core_1, router_1, common_1, auth_service_1, router_2;
     var LoginComponent;
     return {
         setters:[
@@ -19,6 +19,7 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
             },
             function (router_1_1) {
                 router_1 = router_1_1;
+                router_2 = router_1_1;
             },
             function (common_1_1) {
                 common_1 = common_1_1;
@@ -28,9 +29,10 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
             }],
         execute: function() {
             LoginComponent = (function () {
-                function LoginComponent(fb, authService) {
+                function LoginComponent(fb, authService, router) {
                     this.fb = fb;
                     this.authService = authService;
+                    this.router = router;
                     this.processing = false;
                     this.errorMessage = null;
                 }
@@ -42,28 +44,25 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
                 };
                 LoginComponent.prototype.doLogin = function () {
                     var _this = this;
+                    console.log("authenticated status: " + this.authService.isAuthenticated());
                     this.processing = true;
-                    var status = false;
                     if (this.loginForm.valid) {
-                        this.authService.exists(this.loginForm.value.userName)
+                        this.authService.authenticate(this.loginForm.value.userName, this.loginForm.value.password)
                             .then(function (result) { return result.subscribe(function (data) {
                             if (!data.result) {
                                 _this.errorMessage = "Login failed";
                             }
                             else {
-                                _this.errorMessage = "Login succeeded";
+                                _this.authService.setAuthenticated(true);
+                                _this.router.navigate(["Home"]);
                             }
-                            console.log("[AuthService.exists] response for '" + _this.loginForm.value.userName + "': " + JSON.stringify(data));
-                            _this.processing = false;
-                        }, function (error) {
-                            console.log(error);
-                            _this.processing = false;
-                        }, function () { }); });
+                            console.log("[AuthService.authenticate] response for '" + _this.loginForm.value.userName + "': " + JSON.stringify(data));
+                        }, function (error) { console.log(error); }, function () { }); });
                     }
                     else {
                         this.errorMessage = "Login failed";
-                        this.processing = false;
                     }
+                    this.processing = false;
                 };
                 LoginComponent = __decorate([
                     core_1.Component({
@@ -71,7 +70,7 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
                         templateUrl: "app/components/account/login.component.html",
                         directives: [router_1.ROUTER_DIRECTIVES]
                     }), 
-                    __metadata('design:paramtypes', [common_1.FormBuilder, auth_service_1.AuthService])
+                    __metadata('design:paramtypes', [common_1.FormBuilder, auth_service_1.AuthService, router_2.Router])
                 ], LoginComponent);
                 return LoginComponent;
             }());
