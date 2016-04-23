@@ -31,9 +31,9 @@ namespace ZeroImage.Controllers
         }
 
         [HttpPost, AllowAnonymous]
-        public async Task<IActionResult> Create([FromBody]string name)
+        public async Task<IActionResult> Create([FromBody]UserApiModel model)
         {
-            Debug.WriteLine("Received data: " + name);
+            Debug.WriteLine("Received data: " + model.Name);
             /*
             if (ModelState.IsValid)
             {

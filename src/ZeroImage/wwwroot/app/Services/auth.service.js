@@ -45,9 +45,9 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                 AuthService.prototype.register = function (userName, password) {
                     var headers = new http_1.Headers();
                     headers.append("Content-Type", "application/json");
-                    var body = { name: userName, identifier: password };
+                    var body = { name: "TESTNAMN!!" };
                     console.log(JSON.stringify(body));
-                    return Promise.resolve(this.http.post("/api/account", JSON.stringify(body), headers).map(function (res) { return res.json(); }));
+                    return Promise.resolve(this.http.post("/api/account", JSON.stringify(body), { headers: headers }).map(function (res) { return res.json(); }));
                 };
                 AuthService.prototype.handleError = function (error) {
                     //error handling
