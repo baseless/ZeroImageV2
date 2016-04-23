@@ -31,9 +31,10 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../a
             }],
         execute: function() {
             RegisterComponent = (function () {
-                function RegisterComponent(fb, authService) {
+                function RegisterComponent(fb, authService, router) {
                     this.fb = fb;
                     this.authService = authService;
+                    this.router = router;
                     this.processing = false;
                     this.errorMessage = null;
                 }
@@ -55,7 +56,8 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../a
                                 _this.errorMessage = "registration failed";
                             }
                             else {
-                                _this.errorMessage = "registration succeeded";
+                                //this.errorMessage = "registration succeeded";
+                                _this.router.navigate(['Login']);
                             }
                             console.log("[AuthService.register] response for '" + _this.registerForm.value.userName + "': " + JSON.stringify(data));
                             _this.processing = false;
@@ -75,7 +77,7 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../a
                         templateUrl: "app/components/account/register.component.html",
                         directives: [router_1.ROUTER_DIRECTIVES]
                     }), 
-                    __metadata('design:paramtypes', [common_1.FormBuilder, auth_service_1.AuthService])
+                    __metadata('design:paramtypes', [common_1.FormBuilder, auth_service_1.AuthService, router_1.Router])
                 ], RegisterComponent);
                 return RegisterComponent;
             }());
