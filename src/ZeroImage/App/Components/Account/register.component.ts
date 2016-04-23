@@ -1,5 +1,5 @@
 ﻿import { Component, OnInit }                            from "angular2/core";
-import { ROUTER_DIRECTIVES }                            from "angular2/router";
+import { ROUTER_DIRECTIVES, Router }                            from "angular2/router";
 import { ControlGroup, FormBuilder, Validators }        from "angular2/common";
 import { AppValidators }                                from "../../app-validators";
 import { AuthService }                                  from "../../Services/auth.service";
@@ -15,7 +15,7 @@ export class RegisterComponent implements OnInit {
     processing = false;
     errorMessage = null;
 
-    constructor(private fb: FormBuilder, private authService: AuthService) { }
+    constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) { }
 
     ngOnInit() {
         this.registerForm = this.fb.group({
@@ -35,7 +35,8 @@ export class RegisterComponent implements OnInit {
                         if (!data.result) {
                             this.errorMessage = "registration failed";
                         } else {
-                            this.errorMessage = "registration succeeded";
+                            //this.errorMessage = "registration succeeded";
+                            this.router.navigate(['Login']);
                         }
                         console.log(`[AuthService.register] response for '${this.registerForm.value.userName}': ${JSON.stringify(data)}`);
                         this.processing = false;

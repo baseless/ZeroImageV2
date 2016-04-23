@@ -31,10 +31,10 @@ namespace ZeroImage.Controllers
         }
 
         [HttpPost, AllowAnonymous]
-        public async Task<IActionResult> Create([FromBody]string name)
+        public async Task<IActionResult> Create([FromBody]UserApiModel model)
         {
-            Debug.WriteLine("Received data: " + name);
-            /*
+            Debug.WriteLine("Received data: " + model.Name + " ( SHOULD BE A NAME BEFORE THIS)");
+            
             if (ModelState.IsValid)
             {
                 var user = new User
@@ -43,8 +43,9 @@ namespace ZeroImage.Controllers
                     NewIdentifier = model.Identifier
                 };
                 _context.Users.Add(user);
-                await _context.SaveChangesAsync(); 
-            } */
+                await _context.SaveChangesAsync();
+                return Json(new { result = true });
+            } 
             return Json(new { result = false });
         }
     }

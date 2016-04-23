@@ -34,7 +34,7 @@ export class AuthService {
     register(userName: string, password: string) {
         var headers = new Headers();
         headers.append("Content-Type", "application/json");
-        var body = { name: "TESTNAMN!!" };
+        var body = { Name: userName, Identifier: password };
         console.log(JSON.stringify(body));
         return Promise.resolve(this.http.post(`/api/account`, JSON.stringify(body), { headers: headers }).map(res => res.json()));
     }
