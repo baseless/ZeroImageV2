@@ -8,6 +8,7 @@ import { UploadComponent }                                                      
 import { HashLocationStrategy, LocationStrategy, RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, Router }     from "angular2/router";
 import { AuthService }                                                                                          from "./Services/auth.service";
 import { AccountService }                                                                                       from "./Services/acc.service";
+import { FileService }                                                                                          from "./Services/file.service";
 
 @RouteConfig([
     { path: "/", name: "Login", component: LoginComponent, useAsDefault: true },
@@ -21,7 +22,7 @@ import { AccountService }                                                       
     selector: "zero-image",
     templateUrl: "app/app.component.html",
     directives: [ROUTER_DIRECTIVES, RegisterComponent, LoginComponent, NotFoundComponent],
-    providers: [ROUTER_PROVIDERS, HTTP_PROVIDERS, AuthService, AccountService, provide(LocationStrategy, { useClass: HashLocationStrategy })]
+    providers: [ROUTER_PROVIDERS, HTTP_PROVIDERS, AuthService, AccountService, FileService, provide(LocationStrategy, { useClass: HashLocationStrategy })]
 })
 
 export class AppComponent {

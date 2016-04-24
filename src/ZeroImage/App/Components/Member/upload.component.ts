@@ -4,6 +4,7 @@ import { ROUTER_DIRECTIVES }                            from "angular2/router";
 import { ControlGroup, FormBuilder, Validators }        from "angular2/common";
 import { Router }                                       from "angular2/router";
 import { AccountService }                               from "../../Services/acc.service";
+import { FileService }                                  from "../../Services/file.service";
 
 @Component({
     selector: "upload",
@@ -18,12 +19,14 @@ export class UploadComponent {
     errorMessage: string = null;
 
     private imageData: string = null;
+    private imageName: string = null;
 
-    constructor(private fb: FormBuilder, private router: Router, private accService: AccountService) { }
+    constructor(private fb: FormBuilder, private router: Router, private accService: AccountService, private fileService: FileService) { }
 
     ngOnInit() {
         this.uploadForm = this.fb.group({
-            file: ['', Validators.required]
+            file: ['', Validators.required],
+            description: ['']
         });
     }
 
@@ -46,16 +49,28 @@ export class UploadComponent {
         let reader = new FileReader();
         reader.onloadend = e => {
             this.imageData = reader.result;
-            console.log(this.imageData);
+            this.imageName = file.name;
             this.processing = false;
         }
         reader.readAsDataURL(file);
     }
 
     upload() {
-        console.log("KEY: " + this.accService.getMyKey());
-        var encFileData = CryptoJS.AES.encrypt(this.imageData, this.accService.getMyKey());
-        console.log(encFileData.toString());
-        //encrypt and upload
+        this.processing = true;
+        let key = this.accService.getMyKey();
+        let meta = {
+            name: this.uploadForm.value.name,
+            description: this.uploadForm.value.description,
+            origin: this.imageName,
+            type: this.imageName.split(".").pop()
+        };
+        
+        let encFileData = CryptoJS.AES.encrypt(this.imageData, key);
+        let encMeta = CryptoJS.AES.encrypt(JSON.stringify(meta), key);
+
+        this.fileService.upload(encFileData.toString(), encMeta.toString()).then(result => result.subscribe(response => {
+            console.log("Uploaded file: " + this.imageName);
+            this.processing = false;
+            }));
     }
 }

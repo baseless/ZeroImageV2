@@ -7,7 +7,8 @@
                 <input (change)="fetchAndPreview($event)" class="form-control" type="file" ngControl="file"/>
             </div>
             <div class="form-group">
-                (Metadata såsom namn etc?)
+                <label>Description</label>
+                <textarea rows="3" cols="3" class="form-control" ngControl="description"></textarea>
             </div>
             <input type="submit" [disabled]="processing" Value="Upload" class="btn btn-primary"/>
             <img *ngIf="processing" alt="Loading.." src="/img/loading-small.gif" class="pull-right" style="padding-top: 6px;"/>

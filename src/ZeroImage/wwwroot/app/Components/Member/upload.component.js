@@ -1,4 +1,4 @@
-System.register(["angular2/core", "angular2/router", "angular2/common", "../../Services/acc.service"], function(exports_1, context_1) {
+System.register(["angular2/core", "angular2/router", "angular2/common", "../../Services/acc.service", "../../Services/file.service"], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -10,7 +10,7 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, router_1, common_1, router_2, acc_service_1;
+    var core_1, router_1, common_1, router_2, acc_service_1, file_service_1;
     var UploadComponent;
     return {
         setters:[
@@ -26,21 +26,27 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
             },
             function (acc_service_1_1) {
                 acc_service_1 = acc_service_1_1;
+            },
+            function (file_service_1_1) {
+                file_service_1 = file_service_1_1;
             }],
         execute: function() {
             UploadComponent = (function () {
-                function UploadComponent(fb, router, accService) {
+                function UploadComponent(fb, router, accService, fileService) {
                     this.fb = fb;
                     this.router = router;
                     this.accService = accService;
+                    this.fileService = fileService;
                     this.maxFileSize = 1024 * 1024;
                     this.processing = false;
                     this.errorMessage = null;
                     this.imageData = null;
+                    this.imageName = null;
                 }
                 UploadComponent.prototype.ngOnInit = function () {
                     this.uploadForm = this.fb.group({
-                        file: ['', common_1.Validators.required]
+                        file: ['', common_1.Validators.required],
+                        description: ['']
                     });
                 };
                 UploadComponent.prototype.fetchAndPreview = function (event) {
@@ -62,16 +68,27 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
                     var reader = new FileReader();
                     reader.onloadend = function (e) {
                         _this.imageData = reader.result;
-                        console.log(_this.imageData);
+                        _this.imageName = file.name;
                         _this.processing = false;
                     };
                     reader.readAsDataURL(file);
                 };
                 UploadComponent.prototype.upload = function () {
-                    console.log("KEY: " + this.accService.getMyKey());
-                    var encFileData = CryptoJS.AES.encrypt(this.imageData, this.accService.getMyKey());
-                    console.log(encFileData.toString());
-                    //encrypt and upload
+                    var _this = this;
+                    this.processing = true;
+                    var key = this.accService.getMyKey();
+                    var meta = {
+                        name: this.uploadForm.value.name,
+                        description: this.uploadForm.value.description,
+                        origin: this.imageName,
+                        type: this.imageName.split(".").pop()
+                    };
+                    var encFileData = CryptoJS.AES.encrypt(this.imageData, key);
+                    var encMeta = CryptoJS.AES.encrypt(JSON.stringify(meta), key);
+                    this.fileService.upload(encFileData.toString(), encMeta.toString()).then(function (result) { return result.subscribe(function (response) {
+                        console.log("Uploaded file: " + _this.imageName);
+                        _this.processing = false;
+                    }); });
                 };
                 UploadComponent = __decorate([
                     core_1.Component({
@@ -79,7 +96,7 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
                         templateUrl: "app/components/member/upload.component.html",
                         directives: [router_1.ROUTER_DIRECTIVES]
                     }), 
-                    __metadata('design:paramtypes', [common_1.FormBuilder, router_2.Router, acc_service_1.AccountService])
+                    __metadata('design:paramtypes', [common_1.FormBuilder, router_2.Router, acc_service_1.AccountService, file_service_1.FileService])
                 ], UploadComponent);
                 return UploadComponent;
             }());
