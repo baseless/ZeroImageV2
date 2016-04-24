@@ -12,7 +12,7 @@ using ZeroImage.Services;
 
 namespace ZeroImage.Controllers
 {
-    [Route("api/[controller]"), Authorize]
+    [Route("api/[controller]")]
     public class AuthenticateController : RootController
     {
         private readonly ZiDbContext _context;
@@ -52,25 +52,5 @@ namespace ZeroImage.Controllers
             }
             return Json(new { result = false });
         }
-
-        /*
-        [HttpGet("{userName}/{password}"), AllowAnonymous]
-        public async Task<IActionResult> Login(string userName, string password)
-        {
-            Debug.Write("Received request for " + userName + " - " + password);
-            var user = _context.Users.FirstOrDefault(u => u.Name.Equals(userName));
-            if (user != null && user.Identifier.Equals(SecurityService.Hash(password, user.Salt)))
-            {
-                var identity = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.Name, user.Name),
-                    new Claim(ClaimTypes.Email, user.Name)
-                }, CookieAuthenticationDefaults.AuthenticationScheme);
-                await HttpContext.Authentication.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
-
-                return Json(new { result = true });
-            }
-            return Json(new { result = false });
-        } */
     }
 }

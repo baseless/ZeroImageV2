@@ -28,6 +28,13 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                 function FileService(http) {
                     this.http = http;
                 }
+                FileService.prototype.getGallery = function (name) {
+                    var url = "/api/file";
+                    if (name !== ".") {
+                        url = url + ("/" + name);
+                    }
+                    return Promise.resolve(this.http.get(url).map(function (res) { return res.json(); }));
+                };
                 FileService.prototype.upload = function (fileData, meta) {
                     var headers = new http_1.Headers();
                     headers.append("Content-Type", "application/json");

@@ -11,6 +11,14 @@ export class FileService {
 
     constructor(private http: Http) { }
 
+    getGallery(name: string) {
+        var url = `/api/file`;
+        if (name !== ".") {
+            url = url + `/${name}`;
+        }
+        return Promise.resolve(this.http.get(url).map(res => res.json()));
+    }
+
     upload(fileData: string, meta: string) {
         var headers = new Headers();
         headers.append("Content-Type", "application/json");
