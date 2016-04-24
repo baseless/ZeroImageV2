@@ -1,4 +1,4 @@
-System.register(["angular2/core", "angular2/http", "rxjs/Observable", "rxjs/add/operator/map", "rxjs/add/operator/catch", "rxjs/add/operator/share"], function(exports_1, context_1) {
+System.register(["angular2/core", "angular2/http", "rxjs/Observable", "./acc.service", "rxjs/add/operator/map", "rxjs/add/operator/catch", "rxjs/add/operator/share"], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -10,7 +10,7 @@ System.register(["angular2/core", "angular2/http", "rxjs/Observable", "rxjs/add/
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, http_1, Observable_1;
+    var core_1, http_1, Observable_1, acc_service_1;
     var AuthService;
     return {
         setters:[
@@ -23,14 +23,18 @@ System.register(["angular2/core", "angular2/http", "rxjs/Observable", "rxjs/add/
             function (Observable_1_1) {
                 Observable_1 = Observable_1_1;
             },
+            function (acc_service_1_1) {
+                acc_service_1 = acc_service_1_1;
+            },
             function (_1) {},
             function (_2) {},
             function (_3) {}],
         execute: function() {
             AuthService = (function () {
-                function AuthService(http) {
+                function AuthService(http, accService) {
                     var _this = this;
                     this.http = http;
+                    this.accService = accService;
                     this.authenticated$ = new Observable_1.Observable(function (observer) {
                         _this.authObserver = observer;
                         _this.http.get("/api/authenticate/loggedon").map(function (res) { return res.json(); }).subscribe(function (res) { return _this.authObserver.next(res.result); });
@@ -49,6 +53,7 @@ System.register(["angular2/core", "angular2/http", "rxjs/Observable", "rxjs/add/
                     return Promise.resolve(this.http.post("/api/authenticate", JSON.stringify(body), { headers: headers }).map(function (res) {
                         var jsonResult = res.json();
                         if (jsonResult.result === true) {
+                            _this.accService.loadKeys();
                             _this.authObserver.next(true);
                         }
                         return jsonResult;
@@ -80,7 +85,7 @@ System.register(["angular2/core", "angular2/http", "rxjs/Observable", "rxjs/add/
                 };
                 AuthService = __decorate([
                     core_1.Injectable(), 
-                    __metadata('design:paramtypes', [http_1.Http])
+                    __metadata('design:paramtypes', [http_1.Http, acc_service_1.AccountService])
                 ], AuthService);
                 return AuthService;
             }());

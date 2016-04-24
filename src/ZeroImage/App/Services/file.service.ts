@@ -12,10 +12,10 @@ export class FileService {
     constructor(private http: Http) { }
 
     upload(fileData: string, name: string) {
-        var headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        var body = { FileData: fileData, Name: name };
+        //var headers = new Headers();
+        //headers.append("Content-Type", "application/json");
+        //var body = { FileData: fileData, Name: name };
 
-        return Promise.resolve(this.http.post(`/api/file`, JSON.stringify(body), { headers: headers }).map(res => res.json()));
+        //return Promise.resolve(this.http.post(`/api/file`, JSON.stringify(body), { headers: headers }).map(res => res.json()));
     }
 }

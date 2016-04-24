@@ -1,4 +1,4 @@
-System.register(["angular2/core", "angular2/http", "./Components/Account/login.component", "./Components/Account/register.component", "./Components/Status/not-found.component", "./Components/Member/home.component", "./Components/Member/upload.component", "angular2/router", "./Services/auth.service"], function(exports_1, context_1) {
+System.register(["angular2/core", "angular2/http", "./Components/Account/login.component", "./Components/Account/register.component", "./Components/Status/not-found.component", "./Components/Member/home.component", "./Components/Member/upload.component", "angular2/router", "./Services/auth.service", "./Services/acc.service"], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -10,7 +10,7 @@ System.register(["angular2/core", "angular2/http", "./Components/Account/login.c
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, http_1, login_component_1, register_component_1, not_found_component_1, home_component_1, upload_component_1, router_1, auth_service_1;
+    var core_1, http_1, login_component_1, register_component_1, not_found_component_1, home_component_1, upload_component_1, router_1, auth_service_1, acc_service_1;
     var AppComponent;
     return {
         setters:[
@@ -40,6 +40,9 @@ System.register(["angular2/core", "angular2/http", "./Components/Account/login.c
             },
             function (auth_service_1_1) {
                 auth_service_1 = auth_service_1_1;
+            },
+            function (acc_service_1_1) {
+                acc_service_1 = acc_service_1_1;
             }],
         execute: function() {
             AppComponent = (function () {
@@ -68,7 +71,7 @@ System.register(["angular2/core", "angular2/http", "./Components/Account/login.c
                         selector: "zero-image",
                         templateUrl: "app/app.component.html",
                         directives: [router_1.ROUTER_DIRECTIVES, register_component_1.RegisterComponent, login_component_1.LoginComponent, not_found_component_1.NotFoundComponent],
-                        providers: [router_1.ROUTER_PROVIDERS, http_1.HTTP_PROVIDERS, auth_service_1.AuthService, core_1.provide(router_1.LocationStrategy, { useClass: router_1.HashLocationStrategy })]
+                        providers: [router_1.ROUTER_PROVIDERS, http_1.HTTP_PROVIDERS, auth_service_1.AuthService, acc_service_1.AccountService, core_1.provide(router_1.LocationStrategy, { useClass: router_1.HashLocationStrategy })]
                     }), 
                     __metadata('design:paramtypes', [router_1.Router, auth_service_1.AuthService])
                 ], AppComponent);
