@@ -26,25 +26,22 @@ export class LoginComponent implements OnInit {
     }
 
     doLogin() {
-        //console.log("authenticated status: " + this.authenticated);
         this.processing = true;
         if (this.loginForm.valid) {
             this.authService.authenticate(this.loginForm.value.userName, this.loginForm.value.password)
                 .then(result => result.subscribe(
                     data => {
-                        if (!data.result) {
-                            this.errorMessage = "Login failed";
-                        } else {
-                            this.router.navigate(["Home"]);
-                        }
+                        this.processing = false;
+                        if (data.result) this.router.navigate(["Home"]); 
+                        this.errorMessage = "Login failed";
                         console.log(`[AuthService.authenticate] response for '${this.loginForm.value.userName}': ${JSON.stringify(data)}`);
                     },
-                    error => { console.log(error); }, () => { }
+                    error => { console.log(error); }, () => { this.processing = false; }
                 ));
         } else {
             this.errorMessage = "Login failed";
+            this.processing = false;
         }
-        this.processing = false;
     }
 
     doLoginOld() {

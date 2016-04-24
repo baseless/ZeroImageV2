@@ -44,24 +44,21 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
                 };
                 LoginComponent.prototype.doLogin = function () {
                     var _this = this;
-                    //console.log("authenticated status: " + this.authenticated);
                     this.processing = true;
                     if (this.loginForm.valid) {
                         this.authService.authenticate(this.loginForm.value.userName, this.loginForm.value.password)
                             .then(function (result) { return result.subscribe(function (data) {
-                            if (!data.result) {
-                                _this.errorMessage = "Login failed";
-                            }
-                            else {
+                            _this.processing = false;
+                            if (data.result)
                                 _this.router.navigate(["Home"]);
-                            }
+                            _this.errorMessage = "Login failed";
                             console.log("[AuthService.authenticate] response for '" + _this.loginForm.value.userName + "': " + JSON.stringify(data));
-                        }, function (error) { console.log(error); }, function () { }); });
+                        }, function (error) { console.log(error); }, function () { _this.processing = false; }); });
                     }
                     else {
                         this.errorMessage = "Login failed";
+                        this.processing = false;
                     }
-                    this.processing = false;
                 };
                 LoginComponent.prototype.doLoginOld = function () {
                     var _this = this;

@@ -8,23 +8,43 @@ import "rxjs/add/operator/share"
 
 @Injectable()
 export class AuthService {
-    auth$: Observable<boolean>;
+    authenticated$: Observable<boolean>;
     private authObserver: Observer<boolean>;
 
     constructor(private http: Http) {
-        this.auth$ = new Observable(observer => { this.authObserver = observer; this.authObserver.next(false); }).share();
+            this.authenticated$ = new Observable(observer => {
+            this.authObserver = observer;
+            this.http.get("/api/authenticate/loggedon").map(res => res.json()).subscribe(res => this.authObserver.next(res.result));
+        }).share();
+        
+    }
+
+    signOut() {
+        return this.http.get("/api/authenticate/signout").map(res => res.json()).subscribe(res => this.authObserver.next(!res.result));
     }
 
     authenticate(userName: string, password: string) {
+        let headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        let body = { Name: userName, Identifier: password };
+        console.log(JSON.stringify(body));
+        return Promise.resolve(this.http.post(`/api/authenticate`, JSON.stringify(body), { headers: headers }).map(res => {
+            var jsonResult = res.json();
+            if (jsonResult.result === true) {
+                this.authObserver.next(true);
+            }
+            return jsonResult;
+        }));
+        /*
         return Promise.resolve(this.http.get(`/api/authenticate/${userName}/${password}`)
-            .map(res => {
-                let resJson = res.json();
+            .map(result => {
+                var resJson = result.json();
                 if (resJson.result === true) {
                     this.authObserver.next(true);
                 }
                 return resJson;
-            })
-        );
+            }, error => console.log(error.message))
+        ); */
     }
 
     exists(userName: string) {
@@ -34,14 +54,14 @@ export class AuthService {
     }
 
     register(userName: string, password: string) {
-        var headers = new Headers();
+        let headers = new Headers();
         headers.append("Content-Type", "application/json");
-        var body = { Name: userName, Identifier: password };
+        let body = { Name: userName, Identifier: password };
         console.log(JSON.stringify(body));
         return Promise.resolve(this.http.post(`/api/account`, JSON.stringify(body), { headers: headers }).map(res => res.json()));
     }
 
-    handleError(error: Response) {
-        //error handling
+    private handleError(error: any) {
+        console.error(error.message);
     }
 }

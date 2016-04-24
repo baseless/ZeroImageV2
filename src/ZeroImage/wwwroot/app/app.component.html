@@ -11,11 +11,12 @@
         </div>
         <div class="collapse navbar-collapse" id="zimage-navbar-collapse">
             <ul class="nav navbar-nav navbar-right">
-                <!-- Här kommer menu component? -->
-                <a [routerLink]="['Register']" class="btn">Create account</a>
-                <a [routerLink]="['Login']" class="btn">Login</a>
-                <p>{{authenticated}}</p>
-            </ul>
+                <li *ngIf="!authenticated"><a [routerLink]="['Register']" class="btn btn-default">Create account</a></li>
+                <li *ngIf="!authenticated"><a [routerLink]="['Login']" class="btn btn-default">Login</a></li>
+                <li *ngIf="authenticated"><a [routerLink]="['Home']" class="btn btn-default">Home</a></li>
+                <li *ngIf="authenticated"><a [routerLink]="['Upload']" class="btn btn-default">Upload</a></li>
+                <li *ngIf="authenticated"><a (click)="logout()" class="btn btn-default">Log out</a></li>
+</ul>
         </div>
     </div>
 </nav>

@@ -31,21 +31,38 @@ System.register(["angular2/core", "angular2/http", "rxjs/Observable", "rxjs/add/
                 function AuthService(http) {
                     var _this = this;
                     this.http = http;
-                    this.auth$ = new Observable_1.Observable(function (observer) {
+                    this.authenticated$ = new Observable_1.Observable(function (observer) {
                         _this.authObserver = observer;
-                        _this.authObserver.next(false);
+                        _this.http.get("/api/authenticate/loggedon").map(function (res) { return res.json(); }).subscribe(function (res) { return _this.authObserver.next(res.result); });
                     }).share();
                 }
+                AuthService.prototype.signOut = function () {
+                    var _this = this;
+                    return this.http.get("/api/authenticate/signout").map(function (res) { return res.json(); }).subscribe(function (res) { return _this.authObserver.next(!res.result); });
+                };
                 AuthService.prototype.authenticate = function (userName, password) {
                     var _this = this;
-                    return Promise.resolve(this.http.get("/api/authenticate/" + userName + "/" + password)
-                        .map(function (res) {
-                        var resJson = res.json();
-                        if (resJson.result === true) {
+                    var headers = new http_1.Headers();
+                    headers.append("Content-Type", "application/json");
+                    var body = { Name: userName, Identifier: password };
+                    console.log(JSON.stringify(body));
+                    return Promise.resolve(this.http.post("/api/authenticate", JSON.stringify(body), { headers: headers }).map(function (res) {
+                        var jsonResult = res.json();
+                        if (jsonResult.result === true) {
                             _this.authObserver.next(true);
                         }
-                        return resJson;
+                        return jsonResult;
                     }));
+                    /*
+                    return Promise.resolve(this.http.get(`/api/authenticate/${userName}/${password}`)
+                        .map(result => {
+                            var resJson = result.json();
+                            if (resJson.result === true) {
+                                this.authObserver.next(true);
+                            }
+                            return resJson;
+                        }, error => console.log(error.message))
+                    ); */
                 };
                 AuthService.prototype.exists = function (userName) {
                     return Promise.resolve(this.http.get("/api/account/exists/" + userName)
@@ -59,7 +76,7 @@ System.register(["angular2/core", "angular2/http", "rxjs/Observable", "rxjs/add/
                     return Promise.resolve(this.http.post("/api/account", JSON.stringify(body), { headers: headers }).map(function (res) { return res.json(); }));
                 };
                 AuthService.prototype.handleError = function (error) {
-                    //error handling
+                    console.error(error.message);
                 };
                 AuthService = __decorate([
                     core_1.Injectable(), 
