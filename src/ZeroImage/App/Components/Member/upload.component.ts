@@ -55,7 +55,7 @@ export class UploadComponent {
     upload() {
         console.log("KEY: " + this.accService.getMyKey());
         var encFileData = CryptoJS.AES.encrypt(this.imageData, this.accService.getMyKey());
-        console.log(encFileData);
+        console.log(encFileData.toString());
         //encrypt and upload
     }
 }

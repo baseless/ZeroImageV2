@@ -70,7 +70,7 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
                 UploadComponent.prototype.upload = function () {
                     console.log("KEY: " + this.accService.getMyKey());
                     var encFileData = CryptoJS.AES.encrypt(this.imageData, this.accService.getMyKey());
-                    console.log(encFileData);
+                    console.log(encFileData.toString());
                     //encrypt and upload
                 };
                 UploadComponent = __decorate([
