@@ -37,7 +37,7 @@ System.register(["angular2/core", "angular2/http", "rxjs/Observable", "./acc.ser
                     this.accService = accService;
                     this.authenticated$ = new Observable_1.Observable(function (observer) {
                         _this.authObserver = observer;
-                        _this.http.get("/api/authenticate/loggedon").map(function (res) { return res.json(); }).subscribe(function (res) { return _this.authObserver.next(res.result); });
+                        _this.http.get("/api/authenticate/loggedon").map(function (res) { return res.json(); }).subscribe(function (res) { return _this.authObserver.next(res.result); }); //get initial auth status
                     }).share();
                 }
                 AuthService.prototype.signOut = function () {
@@ -49,35 +49,22 @@ System.register(["angular2/core", "angular2/http", "rxjs/Observable", "./acc.ser
                     var headers = new http_1.Headers();
                     headers.append("Content-Type", "application/json");
                     var body = { Name: userName, Identifier: password };
-                    console.log(JSON.stringify(body));
                     return Promise.resolve(this.http.post("/api/authenticate", JSON.stringify(body), { headers: headers }).map(function (res) {
                         var jsonResult = res.json();
                         if (jsonResult.result === true) {
-                            _this.accService.loadKeys();
-                            _this.authObserver.next(true);
+                            _this.accService.loadKeys(); //load all keys for the user and friends
+                            _this.authObserver.next(true); //change observer value to true (authenticated)
                         }
                         return jsonResult;
                     }));
-                    /*
-                    return Promise.resolve(this.http.get(`/api/authenticate/${userName}/${password}`)
-                        .map(result => {
-                            var resJson = result.json();
-                            if (resJson.result === true) {
-                                this.authObserver.next(true);
-                            }
-                            return resJson;
-                        }, error => console.log(error.message))
-                    ); */
                 };
                 AuthService.prototype.exists = function (userName) {
-                    return Promise.resolve(this.http.get("/api/account/exists/" + userName)
-                        .map(function (res) { return res.json(); }));
+                    return Promise.resolve(this.http.get("/api/account/exists/" + userName).map(function (res) { return res.json(); }));
                 };
                 AuthService.prototype.register = function (userName, password) {
                     var headers = new http_1.Headers();
                     headers.append("Content-Type", "application/json");
                     var body = { Name: userName, Identifier: password };
-                    console.log(JSON.stringify(body));
                     return Promise.resolve(this.http.post("/api/account", JSON.stringify(body), { headers: headers }).map(function (res) { return res.json(); }));
                 };
                 AuthService.prototype.handleError = function (error) {

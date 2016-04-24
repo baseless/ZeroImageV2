@@ -11,7 +11,7 @@ import "rxjs/add/operator/share"
 export class AuthService {
     authenticated$: Observable<boolean>; //observable used to control auth state (for example which menu buttons to show)
     private authObserver: Observer<boolean>;
-
+    
     constructor(private http: Http, private accService: AccountService) {
         this.authenticated$ = new Observable(observer => { //initializes the observable and sets the observer
             this.authObserver = observer;
@@ -27,7 +27,6 @@ export class AuthService {
         let headers = new Headers();
         headers.append("Content-Type", "application/json");
         let body = { Name: userName, Identifier: password };
-        console.log(JSON.stringify(body));
         return Promise.resolve(this.http.post(`/api/authenticate`, JSON.stringify(body), { headers: headers }).map(res => {
             var jsonResult = res.json();
             if (jsonResult.result === true) { //if authentication succeeded

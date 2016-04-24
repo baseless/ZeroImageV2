@@ -22,4 +22,8 @@ export class AccountService { //Keeps keys, account maintenance and other stuff
     getKey(name: string) { //gets the key for a specific username
         return this.keys[name];
     }
+
+    getMyKey() { //gets the key for a specific username
+        return this.keys["."];
+    }
 }

@@ -28,7 +28,8 @@ gulp.task("vendor:js", function () {
         "node_modules/angular2/bundles/angular2.dev.js",
         "node_modules/angular2/bundles/router.dev.js",
         "node_modules/bootstrap/dist/js/bootstrap.js",
-        "node_modules/jquery/dist/jquery.min.js"
+        "node_modules/jquery/dist/jquery.min.js",
+        "node_modules/crypto-js/aes.js"
     ]).pipe(gulp.dest(paths.www_lib));
 });
 

@@ -27,13 +27,16 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
             AccountService = (function () {
                 function AccountService(http) {
                     this.http = http;
-                    this.keys = new Array();
-                    this.keys["."] = "abc12345"; //temporary
+                    this.keys = new Array(); //The main key store, holds user / friend keys during runtime
+                    this.keys["."] = "abc123"; //temporary
                 }
                 AccountService.prototype.loadKeys = function () {
                 };
                 AccountService.prototype.getKey = function (name) {
                     return this.keys[name];
+                };
+                AccountService.prototype.getMyKey = function () {
+                    return this.keys["."];
                 };
                 AccountService = __decorate([
                     core_1.Injectable(), 

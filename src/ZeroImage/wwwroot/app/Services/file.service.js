@@ -29,10 +29,10 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                     this.http = http;
                 }
                 FileService.prototype.upload = function (fileData, name) {
-                    var headers = new http_1.Headers();
-                    headers.append("Content-Type", "application/json");
-                    var body = { FileData: fileData, Name: name };
-                    return Promise.resolve(this.http.post("/api/file", JSON.stringify(body), { headers: headers }).map(function (res) { return res.json(); }));
+                    //var headers = new Headers();
+                    //headers.append("Content-Type", "application/json");
+                    //var body = { FileData: fileData, Name: name };
+                    //return Promise.resolve(this.http.post(`/api/file`, JSON.stringify(body), { headers: headers }).map(res => res.json()));
                 };
                 FileService = __decorate([
                     core_1.Injectable(), 
