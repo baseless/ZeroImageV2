@@ -50,7 +50,7 @@ export class GalleryComponent {
                 }
             }));
     }
-
+    //this method does nothing 
     private loadGalleryItems(names: string[]) {
         const name = names.shift();
         const item = new GalleryItem();

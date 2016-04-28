@@ -9,13 +9,15 @@ import "rxjs/add/operator/share"
 @Injectable()
 export class AccountService { //Keeps keys, account maintenance and other stuff
 
+    private userName = null;
+    private password = null;
     private keys = new Array(); //The main key store, holds user / friend keys during runtime
 
     constructor(private http: Http) {
         this.keys["."] = "abc123"; //temporary
     }
 
-    loadKeys() { //load keys at logon
+    loadKeys() { //load userName, password, keys at logon
         
     }
 

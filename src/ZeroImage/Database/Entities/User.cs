@@ -23,5 +23,9 @@ namespace ZeroImage.Database.Entities
         [Required]
         public string Salt { get; set; }
         public virtual ICollection<File> Files { get; set; } = new List<File>();
+        //[Required]
+        public string PublicKey { get; set; }
+        //[Required]
+        public string Store { get; set; }
     }
 }

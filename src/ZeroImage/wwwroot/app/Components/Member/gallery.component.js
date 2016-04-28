@@ -65,6 +65,7 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
                         }
                     }); });
                 };
+                //this method does nothing 
                 GalleryComponent.prototype.loadGalleryItems = function (names) {
                     var _this = this;
                     var name = names.shift();

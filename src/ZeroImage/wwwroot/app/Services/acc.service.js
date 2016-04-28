@@ -27,6 +27,8 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
             AccountService = (function () {
                 function AccountService(http) {
                     this.http = http;
+                    this.userName = null;
+                    this.password = null;
                     this.keys = new Array(); //The main key store, holds user / friend keys during runtime
                     this.keys["."] = "abc123"; //temporary
                 }
