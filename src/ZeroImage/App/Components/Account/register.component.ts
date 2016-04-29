@@ -15,9 +15,12 @@ export class RegisterComponent implements OnInit {
     processing = false;
     errorMessage = null;
 
+    
+
     constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) { }
 
     ngOnInit() {
+
         this.registerForm = this.fb.group({
             userName: ['', Validators.compose([Validators.required])],
             password: ['', Validators.compose([AppValidators.validatePassword])],
@@ -26,6 +29,7 @@ export class RegisterComponent implements OnInit {
     }
 
     doRegister() {
+
         this.processing = true;
         let status = false;
         if (this.registerForm.valid) {
@@ -36,6 +40,7 @@ export class RegisterComponent implements OnInit {
                             this.errorMessage = "registration failed";
                         } else {
                             //this.errorMessage = "registration succeeded";
+
                             this.router.navigate(['Login']);
                         }
                         console.log(`[AuthService.register] response for '${this.registerForm.value.userName}': ${JSON.stringify(data)}`);
@@ -52,4 +57,6 @@ export class RegisterComponent implements OnInit {
             this.processing = false;
         }
     }
+
+    
 }

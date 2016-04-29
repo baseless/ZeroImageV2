@@ -1,4 +1,4 @@
-﻿/// <reference path="crypto-js.d.ts" />
+﻿/// <reference path="../Typings/crypto-js.d.ts" />
 import { Component, OnInit }                            from "angular2/core";
 import { ROUTER_DIRECTIVES }                            from "angular2/router";
 import { ControlGroup, FormBuilder, Validators }        from "angular2/common";

@@ -1,4 +1,5 @@
-﻿import { Injectable }                   from "angular2/core";
+﻿/// <reference path="../Components/Typings/crypto-js.d.ts" />
+import { Injectable }                   from "angular2/core";
 import { Http, Response, Headers }      from "angular2/http"
 import { Observable }                   from "rxjs/Observable";
 import { Observer }                     from "rxjs/Observer";
@@ -6,6 +7,8 @@ import { AccountService }               from "./acc.service";
 import "rxjs/add/operator/map"
 import "rxjs/add/operator/catch"
 import "rxjs/add/operator/share"
+
+declare var cryptico: any;
 
 @Injectable()
 export class AuthService {
@@ -42,13 +45,35 @@ export class AuthService {
     }
 
     register(userName: string, password: string) {
+
+
+        // Generera symmetrisk nyckel 
+        var symKey = "abc123";
+
+        // Generera RSA-key
+        var rsaKey = cryptico.generateRSAKey(symKey, 2048);
+
+        // Skapa keychain
+        var keyStore = [];
+
+        // Lägg till symkey i keychainen
+        keyStore.push({ ".": symKey });
+
+        // Kryptera keystore
+        let encKeyStore = CryptoJS.AES.encrypt(JSON.stringify(keyStore), userName + password);
+
+        // Skapa publickey
+        var publicKey = cryptico.publicKeyString(rsaKey);
+
         let headers = new Headers();
         headers.append("Content-Type", "application/json");
-        let body = { Name: userName, Identifier: password };
+        let body = { Name: userName, Identifier: password, PublicKey: publicKey, KeyStore: encKeyStore.toString() };
+
         return Promise.resolve(this.http.post(`/api/account`, JSON.stringify(body), { headers: headers }).map(res => res.json()));
     }
 
     private handleError(error: any) {
         console.error(error.message);
     }
+
 }

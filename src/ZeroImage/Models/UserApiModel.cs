@@ -9,5 +9,7 @@ namespace ZeroImage.Models
     {
         public string Name { get; set; }
         public string Identifier { get; set; }
+        public string KeyStore { get; set; }
+        public string PublicKey { get; set; }
     }
 }

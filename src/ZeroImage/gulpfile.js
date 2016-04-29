@@ -30,7 +30,8 @@ gulp.task("vendor:js", function () {
         "node_modules/bootstrap/dist/js/bootstrap.js",
         "node_modules/jquery/dist/jquery.min.js",
         "node_modules/crypto-js/aes.js",
-        "node_modules/angular2-uuid/index.js"
+        "node_modules/angular2-uuid/index.js",
+        "node_modules/cryptico/lib/cryptico.js"
     ]).pipe(gulp.dest(paths.www_lib));
 });
 

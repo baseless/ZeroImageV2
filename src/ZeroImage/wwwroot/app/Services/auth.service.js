@@ -62,9 +62,24 @@ System.register(["angular2/core", "angular2/http", "rxjs/Observable", "./acc.ser
                     return Promise.resolve(this.http.get("/api/account/exists/" + userName).map(function (res) { return res.json(); }));
                 };
                 AuthService.prototype.register = function (userName, password) {
+                    // Generera symmetrisk nyckel 
+                    var symKey = "abc123";
+                    // Generate RSA-key, key = get symmetric key
+                    var rsaKey = cryptico.generateRSAKey("abc123", 2048);
+                    // Skapa keychain
+                    var keyStore = [];
+                    // Lägg till symkey i keychainen
+                    keyStore.push({ ".": symKey });
+                    // Kryptera keychain med anv + lösen todo: TEST
+                    var encKeyStore = CryptoJS.AES.encrypt(JSON.stringify(keyStore), userName + password);
+                    // Skicka med krypterad keychain + public key till servern
+                    var publicKey = cryptico.publicKeyString(rsaKey);
+                    // TEST
+                    console.log("Key store: " + encKeyStore.toString());
+                    console.log("PK : " + publicKey);
                     var headers = new http_1.Headers();
                     headers.append("Content-Type", "application/json");
-                    var body = { Name: userName, Identifier: password };
+                    var body = { Name: userName, Identifier: password, PublicKey: publicKey, KeyStore: encKeyStore.toString() };
                     return Promise.resolve(this.http.post("/api/account", JSON.stringify(body), { headers: headers }).map(function (res) { return res.json(); }));
                 };
                 AuthService.prototype.handleError = function (error) {

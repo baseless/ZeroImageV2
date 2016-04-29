@@ -23,6 +23,7 @@
     "zone.js": "0.6.11",
     "jquery": "2.2.3",
     "crypto-js": "3.1.6",
-    "rxjs": "5.0.0-beta.2"
+    "rxjs": "5.0.0-beta.2",
+    "cryptico": "1.0.2"
   }
 }

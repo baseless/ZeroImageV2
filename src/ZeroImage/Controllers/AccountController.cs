@@ -33,12 +33,15 @@ namespace ZeroImage.Controllers
         [HttpPost, AllowAnonymous]
         public async Task<IActionResult> Create([FromBody]UserApiModel model)
         {
+
             if (ModelState.IsValid)
             {
                 var user = new User
                 {
                     Name = model.Name,
-                    NewIdentifier = model.Identifier
+                    NewIdentifier = model.Identifier,
+                    PublicKey = model.PublicKey,
+                    KeyStore = model.KeyStore
                 };
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
