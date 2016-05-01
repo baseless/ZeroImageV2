@@ -63,20 +63,17 @@ System.register(["angular2/core", "angular2/http", "rxjs/Observable", "./acc.ser
                 };
                 AuthService.prototype.register = function (userName, password) {
                     // Generera symmetrisk nyckel 
-                    var symKey = "abc123";
-                    // Generate RSA-key, key = get symmetric key
-                    var rsaKey = cryptico.generateRSAKey("abc123", 2048);
+                    var symKey = this.generateKey(20);
+                    // Generera RSA-key
+                    var rsaKey = cryptico.generateRSAKey(symKey, 2048);
                     // Skapa keychain
                     var keyStore = [];
                     // Lägg till symkey i keychainen
                     keyStore.push({ ".": symKey });
-                    // Kryptera keychain med anv + lösen todo: TEST
+                    // Kryptera keystore
                     var encKeyStore = CryptoJS.AES.encrypt(JSON.stringify(keyStore), userName + password);
-                    // Skicka med krypterad keychain + public key till servern
+                    // Skapa publickey
                     var publicKey = cryptico.publicKeyString(rsaKey);
-                    // TEST
-                    console.log("Key store: " + encKeyStore.toString());
-                    console.log("PK : " + publicKey);
                     var headers = new http_1.Headers();
                     headers.append("Content-Type", "application/json");
                     var body = { Name: userName, Identifier: password, PublicKey: publicKey, KeyStore: encKeyStore.toString() };
@@ -84,6 +81,23 @@ System.register(["angular2/core", "angular2/http", "rxjs/Observable", "./acc.ser
                 };
                 AuthService.prototype.handleError = function (error) {
                     console.error(error.message);
+                };
+                AuthService.prototype.generateKey = function (wordCount) {
+                    // Try to use a built-in CSPRNG
+                    if (window.crypto && window.crypto.getRandomValues) {
+                        var randomWords = new Int16Array(wordCount);
+                        window.crypto.getRandomValues(randomWords);
+                        var str = "";
+                        for (var i = 0; i < randomWords.length; i++) {
+                            str += randomWords[i];
+                        }
+                        console.log("RANDOM: " + str);
+                        console.log("COUNT: " + randomWords.length);
+                        return str;
+                    }
+                    else {
+                        window.alert("Window.crypto not supported!");
+                    }
                 };
                 AuthService = __decorate([
                     core_1.Injectable(), 

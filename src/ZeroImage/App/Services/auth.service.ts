@@ -44,25 +44,24 @@ export class AuthService {
         return Promise.resolve(this.http.get(`/api/account/exists/${userName}`).map(res => res.json()));
     }
 
-    register(userName: string, password: string) {
+    register(userName: string, password: string) {    
 
+        // Generate symmetric key
+        var symKey = this.generateKey(20);
 
-        // Generera symmetrisk nyckel 
-        var symKey = "abc123";
-
-        // Generera RSA-key
+        // Generate RSA-key
         var rsaKey = cryptico.generateRSAKey(symKey, 2048);
 
-        // Skapa keychain
+        // Create key store
         var keyStore = [];
 
-        // Lägg till symkey i keychainen
+        // Add sym-key to key store
         keyStore.push({ ".": symKey });
 
-        // Kryptera keystore
+        // Encrypt key store
         let encKeyStore = CryptoJS.AES.encrypt(JSON.stringify(keyStore), userName + password);
 
-        // Skapa publickey
+        // Create public key
         var publicKey = cryptico.publicKeyString(rsaKey);
 
         let headers = new Headers();
@@ -74,6 +73,24 @@ export class AuthService {
 
     private handleError(error: any) {
         console.error(error.message);
+    }
+
+
+    private generateKey(wordCount) {
+        // Try to use a built-in CSPRNG
+        if (window.crypto && window.crypto.getRandomValues) {
+            let randomWords = new Int32Array(wordCount);
+            window.crypto.getRandomValues(randomWords);
+            var str = "";
+            
+            for (var i = 0; i < randomWords.length; i++) {
+                str += randomWords[i];
+            }
+            return str;
+
+        } else {
+            window.alert("Window.crypto not supported!");
+        }          
     }
 
 }
