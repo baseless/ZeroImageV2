@@ -3,7 +3,7 @@ using ZeroImage.Database.Entities;
 
 namespace ZeroImage.Database
 {
-    public class ZiDbInitializer : DropCreateDatabaseAlways<ZiDbContext>
+    public class ZiDbInitializer : DropCreateDatabaseIfModelChanges<ZiDbContext>
     {
         public override void InitializeDatabase(ZiDbContext context)
         {

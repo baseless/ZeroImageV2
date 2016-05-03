@@ -29,10 +29,25 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                     this.http = http;
                     this.userName = null;
                     this.password = null;
-                    this.keys = new Array(); //The main key store, holds user / friend keys during runtime
-                    this.keys["."] = "abc123"; //temporary
+                    //this.keys["."] = "abc123"; //temporary
                 }
-                AccountService.prototype.loadKeys = function () {
+                AccountService.prototype.setCredentials = function (userName, password) {
+                    this.userName = userName;
+                    this.password = password;
+                };
+                AccountService.prototype.loadKeys = function (keyStore) {
+                    // Decrypt keystore
+                    var decKeyStore = CryptoJS.AES.decrypt(keyStore, this.userName + this.password);
+                    // Decode and convert into proper JSON
+                    var jsonString = decKeyStore.toString(CryptoJS.enc.Utf8);
+                    // Remove starting / ending square brackets for proper JSON parsing.
+                    jsonString = jsonString.substring(1, jsonString.length - 1);
+                    console.log("JSON: " + jsonString);
+                    // Parse into object
+                    this.keys = JSON.parse(jsonString);
+                    console.log("KEYS: " + this.keys);
+                    console.log("My key: " + this.keys['.']);
+                    // Load keys 
                 };
                 AccountService.prototype.getKey = function (name) {
                     return this.keys[name];

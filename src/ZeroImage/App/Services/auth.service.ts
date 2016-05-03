@@ -33,7 +33,8 @@ export class AuthService {
         return Promise.resolve(this.http.post(`/api/authenticate`, JSON.stringify(body), { headers: headers }).map(res => {
             var jsonResult = res.json();
             if (jsonResult.result === true) { //if authentication succeeded
-                this.accService.loadKeys(); //load all keys for the user and friends
+                this.accService.setCredentials(userName, password); //set credentials of logged in user
+                this.accService.loadKeys(jsonResult.keyStore); //load all keys for the user and friends
                 this.authObserver.next(true); //change observer value to true (authenticated)
             }
             return jsonResult;
@@ -47,13 +48,13 @@ export class AuthService {
     register(userName: string, password: string) {    
 
         // Generate symmetric key
-        var symKey = this.generateKey(20);
+        let symKey = this.generateSymKey(20);
 
         // Generate RSA-key
-        var rsaKey = cryptico.generateRSAKey(symKey, 2048);
+        let rsaKey = this.generateRSAKey(symKey, 2048);
 
         // Create key store
-        var keyStore = [];
+        let keyStore = [];
 
         // Add sym-key to key store
         keyStore.push({ ".": symKey });
@@ -61,8 +62,8 @@ export class AuthService {
         // Encrypt key store
         let encKeyStore = CryptoJS.AES.encrypt(JSON.stringify(keyStore), userName + password);
 
-        // Create public key
-        var publicKey = cryptico.publicKeyString(rsaKey);
+        // Get public key
+        var publicKey = this.getPublicKeyFromRsaKey(rsaKey);
 
         let headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -75,8 +76,7 @@ export class AuthService {
         console.error(error.message);
     }
 
-
-    private generateKey(wordCount) {
+    private generateSymKey(wordCount) {
         // Try to use a built-in CSPRNG
         if (window.crypto && window.crypto.getRandomValues) {
             let randomWords = new Int32Array(wordCount);
@@ -92,5 +92,15 @@ export class AuthService {
             window.alert("Window.crypto not supported!");
         }          
     }
+
+    generateRSAKey(symKey, bits) {
+        return cryptico.generateRSAKey(symKey, bits);
+    }
+
+    getPublicKeyFromRsaKey(rsaKey) {
+        return cryptico.publicKeyString(rsaKey);
+    }
+
+
 
 }

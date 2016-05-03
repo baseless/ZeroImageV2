@@ -48,7 +48,8 @@ namespace ZeroImage.Controllers
                 }, CookieAuthenticationDefaults.AuthenticationScheme);
                 await HttpContext.Authentication.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
 
-                return Json(new { result = true });
+                // Return encrypted key store
+                return Json(new { result = true, keyStore = user.KeyStore });
             }
             return Json(new { result = false });
         }

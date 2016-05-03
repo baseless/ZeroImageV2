@@ -52,7 +52,8 @@ System.register(["angular2/core", "angular2/http", "rxjs/Observable", "./acc.ser
                     return Promise.resolve(this.http.post("/api/authenticate", JSON.stringify(body), { headers: headers }).map(function (res) {
                         var jsonResult = res.json();
                         if (jsonResult.result === true) {
-                            _this.accService.loadKeys(); //load all keys for the user and friends
+                            _this.accService.setCredentials(userName, password); //set credentials of logged in user
+                            _this.accService.loadKeys(jsonResult.keyStore); //load all keys for the user and friends
                             _this.authObserver.next(true); //change observer value to true (authenticated)
                         }
                         return jsonResult;
@@ -62,18 +63,18 @@ System.register(["angular2/core", "angular2/http", "rxjs/Observable", "./acc.ser
                     return Promise.resolve(this.http.get("/api/account/exists/" + userName).map(function (res) { return res.json(); }));
                 };
                 AuthService.prototype.register = function (userName, password) {
-                    // Generera symmetrisk nyckel 
-                    var symKey = this.generateKey(20);
-                    // Generera RSA-key
-                    var rsaKey = cryptico.generateRSAKey(symKey, 2048);
-                    // Skapa keychain
+                    // Generate symmetric key
+                    var symKey = this.generateSymKey(20);
+                    // Generate RSA-key
+                    var rsaKey = this.generateRSAKey(symKey, 2048);
+                    // Create key store
                     var keyStore = [];
-                    // Lägg till symkey i keychainen
+                    // Add sym-key to key store
                     keyStore.push({ ".": symKey });
-                    // Kryptera keystore
+                    // Encrypt key store
                     var encKeyStore = CryptoJS.AES.encrypt(JSON.stringify(keyStore), userName + password);
-                    // Skapa publickey
-                    var publicKey = cryptico.publicKeyString(rsaKey);
+                    // Get public key
+                    var publicKey = this.getPublicKeyFromRsaKey(rsaKey);
                     var headers = new http_1.Headers();
                     headers.append("Content-Type", "application/json");
                     var body = { Name: userName, Identifier: password, PublicKey: publicKey, KeyStore: encKeyStore.toString() };
@@ -82,22 +83,26 @@ System.register(["angular2/core", "angular2/http", "rxjs/Observable", "./acc.ser
                 AuthService.prototype.handleError = function (error) {
                     console.error(error.message);
                 };
-                AuthService.prototype.generateKey = function (wordCount) {
+                AuthService.prototype.generateSymKey = function (wordCount) {
                     // Try to use a built-in CSPRNG
                     if (window.crypto && window.crypto.getRandomValues) {
-                        var randomWords = new Int16Array(wordCount);
+                        var randomWords = new Int32Array(wordCount);
                         window.crypto.getRandomValues(randomWords);
                         var str = "";
                         for (var i = 0; i < randomWords.length; i++) {
                             str += randomWords[i];
                         }
-                        console.log("RANDOM: " + str);
-                        console.log("COUNT: " + randomWords.length);
                         return str;
                     }
                     else {
                         window.alert("Window.crypto not supported!");
                     }
+                };
+                AuthService.prototype.generateRSAKey = function (symKey, bits) {
+                    return cryptico.generateRSAKey(symKey, bits);
+                };
+                AuthService.prototype.getPublicKeyFromRsaKey = function (rsaKey) {
+                    return cryptico.publicKeyString(rsaKey);
                 };
                 AuthService = __decorate([
                     core_1.Injectable(), 
