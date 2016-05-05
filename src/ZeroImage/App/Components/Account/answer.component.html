@@ -7,8 +7,8 @@
             {{errorMessage}}
         </div>
         <div>
-            <h4>Request received from <span style="font-weight: bold; font-style: italic;">{{request.UserName}}</span></h4>
-            <p>Question: <span style="font-weight: bold; font-style: italic;">{{request.Question}}</span></p>
+            <h4>Request received from <span style="font-weight: bold; font-style: italic;">{{requester}}</span></h4>
+            <p>Question: <span style="font-weight: bold; font-style: italic;">{{question}}</span></p>
 
             <form [ngFormModel]="answerForm" (submit)="doAnswer()">
                 <div class="form-group">

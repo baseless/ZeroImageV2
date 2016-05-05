@@ -22,6 +22,20 @@ namespace ZeroImage.Controllers
             _context = context;
         }
 
+        [HttpPost("answer")] //Updates request with target payload and update the current users keystore
+        public async Task<IActionResult> AnswerRequest([FromBody]AnswerRequestApiModel model)
+        {
+            Debug.WriteLine(model.KeyStore + " - " + model.Payload + " - " + model.RequestId);
+            var request = await _context.Requests.FindAsync(model.RequestId);
+            if (request == null) return Json(new {result = false});
+
+            var user = await _context.Users.FindAsync(User.Identity.Name);
+            user.KeyStore = model.KeyStore;
+            request.TargetPayload = model.Payload;
+            await _context.SaveChangesAsync();
+            return Json(new { result = true });
+        }
+
         [HttpGet("single/{id}")]
         public async Task<IActionResult> GetRequest(Guid id)
         {
@@ -34,7 +48,8 @@ namespace ZeroImage.Controllers
                     UserName = request.OriginUserName,
                     Payload = request.OriginPayload,
                     Question = request.Question,
-                    RequestId = request.Id.ToString()
+                    RequestId = request.Id.ToString(),
+                    PublicKey = request.OriginUser.PublicKey
                 };
                 return Json(resp);
             }
@@ -42,15 +57,16 @@ namespace ZeroImage.Controllers
         }
 
         [HttpGet("incoming")]
-        public IActionResult GetRequests()
+        public IActionResult GetIncomingRequests()
         {
-            var requests = _context.Requests.Where(x => x.TargetUser.Name.Equals(User.Identity.Name) && x.Completed.Equals(false)).Select(s => 
+            var requests = _context.Requests.Where(x => x.TargetUser.Name.Equals(User.Identity.Name) && x.Completed.Equals(false) && x.TargetPayload == null).Select(s => 
             new ResponseRequestApiModel
             {
                 UserName = s.OriginUserName.ToString(),
                 Payload = s.OriginPayload,
                 Question = s.Question,
-                RequestId = s.Id.ToString()
+                RequestId = s.Id.ToString(),
+                PublicKey = s.OriginUser.PublicKey
             }).ToArray();
             return Json(requests);
         }

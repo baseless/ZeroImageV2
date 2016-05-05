@@ -42,8 +42,11 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                     var decKeyStore = CryptoJS.AES.decrypt(keyStore, this.userName + this.password);
                     // Decode and convert into proper JSON
                     var jsonString = decKeyStore.toString(CryptoJS.enc.Utf8);
-                    // Remove starting / ending square brackets for proper JSON parsing.
-                    jsonString = jsonString.substring(1, jsonString.length - 1);
+                    console.log("Jsonifying keystore: " + jsonString);
+                    if (jsonString[0] === "[") {
+                        // Remove starting / ending square brackets for proper JSON parsing.
+                        jsonString = jsonString.substring(1, jsonString.length - 1);
+                    }
                     // Parse into object
                     this.keys = JSON.parse(jsonString);
                     console.log("Authed which symkey: " + this.getMyKey());
@@ -86,7 +89,9 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                     headers.append("Content-Type", "application/json");
                     return Promise.resolve(this.http.get("/api/request/single/" + id, { headers: headers }).map(function (res) { return res.json(); }));
                 };
-                AccountService.prototype.answerFriendRequest = function (answer, payload, callback) {
+                AccountService.prototype.answerFriendRequest = function (answer, payload, originUser, originPublicKey, requestId, callback) {
+                    var headers = new http_1.Headers();
+                    headers.append("Content-Type", "application/json");
                     console.log("answering for " + answer + ", payload: " + payload);
                     //S0: generate RSA instance (incl the private key)
                     var rsa = this.generateUserRSAKey();
@@ -96,9 +101,19 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                     //console.log("RSA decryption status: " + rsaDecrypted.status);
                     var symKey = CryptoJS.AES.decrypt(payload, answer).toString(CryptoJS.enc.Utf8);
                     console.log("Decrypted key: " + symKey);
-                    //S2: Add the payload key to keychain and upload it
+                    //S2: Add the payload key to keychain and encrypt / prepare keychain for upload
+                    this.keys[originUser] = symKey;
+                    console.log("Encrypting keystore: " + JSON.stringify(this.keys));
+                    var encKeyStore = CryptoJS.AES.encrypt(JSON.stringify(this.keys), this.userName + this.password).toString();
                     //S3: Create a new payload with own symmtric key and encrypt using public key of requester
+                    //let newPayload = cryptico.encrypt(payload, publicKey).cipher; //Step 2: encrypt using targets RSA public key
+                    var newPayload = this.getMyKey(); //TEMP, SKA KRYPTERAS FÖRST
                     //S4: send the new payload to the server
+                    var body = { KeyStore: encKeyStore.toString(), RequestId: requestId, Payload: newPayload };
+                    Promise.resolve(this.http.post("/api/request/answer", JSON.stringify(body), { headers: headers }).map(function (res) { return res.json(); }))
+                        .then(function (resp) { return resp.subscribe(function (data) {
+                        console.log("received: " + JSON.stringify(data));
+                    }, function (error) { console.log(error); }); });
                     return "";
                 };
                 AccountService = __decorate([

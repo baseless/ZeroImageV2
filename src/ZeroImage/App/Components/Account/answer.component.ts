@@ -15,11 +15,13 @@ export class AnswerComponent implements OnInit {
     processing = false;
     errorMessage = null;
 
-    private request: JSON;
     private payload = "";
+    private requester = "";
+    private requesterPublicKey = "";
+    private question = "";
     private id: string;
 
-    constructor(private fb: FormBuilder, private accService: AccountService, private router: Router, private routeParams: RouteParams) { this.request = JSON.parse("{}"); }
+    constructor(private fb: FormBuilder, private accService: AccountService, private router: Router, private routeParams: RouteParams) { }
 
     ngOnInit() {
         this.id = this.routeParams.get("id");
@@ -36,33 +38,20 @@ export class AnswerComponent implements OnInit {
             if (data.length === 0) {
                 this.errorMessage = "Request not found";
             } else {
-                this.request = data;
+                this.requester = data.UserName;
                 this.payload = data.Payload;
+                this.question = data.Question;
+                this.requesterPublicKey = data.PublicKey;
             }
         }));
     }
 
     doAnswer() {
         this.processing = true;
-        this.accService.answerFriendRequest(this.answerForm.value.answer, this.payload, result => {
+        this.accService.answerFriendRequest(this.answerForm.value.answer, this.payload, this.requester, this.requesterPublicKey, this.id, result => {
             alert(result);
-        });
-        //S0: generate RSA instance (incl the private key)
-        //S1: Decrypt payload using answer
-        //S2: Add the payload key to keychain and upload it
-        //S3: Create a new payload with own symmtric key and encrypt using public key of requester
-        //S4: send the new payload to the server
-        /*
-        if (this.requestForm.valid) {
-            this.accService.sendNewFriendRequest(this.requestForm.value.userName, this.requestForm.value.question, this.requestForm.value.answer,
-                result => {
-                    alert(result);
-                    this.processing = false;
-                });
-        } else {
-            this.errorMessage = "Request failed";
             this.processing = false;
-        } */
+        });
     }
 
 

@@ -11,5 +11,6 @@ namespace ZeroImage.Models
         public string UserName { get; set; }
         public string Question { get; set; }
         public string Payload { get; set; }
+        public string PublicKey { get; set; }
     }
 }

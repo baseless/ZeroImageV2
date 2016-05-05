@@ -37,10 +37,11 @@ export class AccountService { //Keeps keys, account maintenance and other stuff
 
         // Decode and convert into proper JSON
         var jsonString = decKeyStore.toString(CryptoJS.enc.Utf8);
-
-        // Remove starting / ending square brackets for proper JSON parsing.
-        jsonString = jsonString.substring(1, jsonString.length - 1);
-
+        console.log("Jsonifying keystore: " + jsonString);
+        if (jsonString[0] === "[") {
+            // Remove starting / ending square brackets for proper JSON parsing.
+            jsonString = jsonString.substring(1, jsonString.length - 1);
+        }
         // Parse into object
         this.keys = JSON.parse(jsonString);
 
@@ -93,7 +94,9 @@ export class AccountService { //Keeps keys, account maintenance and other stuff
         return Promise.resolve(this.http.get(`/api/request/single/${id}`, { headers: headers }).map(res => res.json()));
     }
 
-    answerFriendRequest(answer: string, payload: string, callback) {
+    answerFriendRequest(answer: string, payload: string, originUser: string, originPublicKey: string, requestId: string, callback) {
+        let headers = new Headers();
+        headers.append("Content-Type", "application/json");
         console.log("answering for " + answer + ", payload: " + payload);
 
         //S0: generate RSA instance (incl the private key)
@@ -103,14 +106,24 @@ export class AccountService { //Keeps keys, account maintenance and other stuff
         //console.log("Decrypting using my symkey: " + this.getMyKey());
         //let rsaDecrypted = rsa.decrypt(payload, this.getMyKey());
         //console.log("RSA decryption status: " + rsaDecrypted.status);
-        let symKey = CryptoJS.AES.decrypt(payload, answer).toString(CryptoJS.enc.Utf8);
+        const symKey = CryptoJS.AES.decrypt(payload, answer).toString(CryptoJS.enc.Utf8);
         console.log(`Decrypted key: ${symKey}`);
 
-        //S2: Add the payload key to keychain and upload it
+        //S2: Add the payload key to keychain and encrypt / prepare keychain for upload
+        this.keys[originUser] = symKey;
+        console.log("Encrypting keystore: " + JSON.stringify(this.keys));
+        const encKeyStore = CryptoJS.AES.encrypt(JSON.stringify(this.keys), this.userName + this.password).toString();
 
         //S3: Create a new payload with own symmtric key and encrypt using public key of requester
+        //let newPayload = cryptico.encrypt(payload, publicKey).cipher; //Step 2: encrypt using targets RSA public key
+        const newPayload = this.getMyKey(); //TEMP, SKA KRYPTERAS FÖRST
 
         //S4: send the new payload to the server
+        const body = { KeyStore: encKeyStore.toString(), RequestId: requestId, Payload: newPayload };
+        Promise.resolve(this.http.post(`/api/request/answer`, JSON.stringify(body), { headers: headers }).map(res => res.json()))
+            .then(resp => resp.subscribe(data => {
+                console.log(`received: ${JSON.stringify(data)}`);
+            }, error => { console.log(error); }));
 
         return "";
     }

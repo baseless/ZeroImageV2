@@ -36,7 +36,9 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
                     this.processing = false;
                     this.errorMessage = null;
                     this.payload = "";
-                    this.request = JSON.parse("{}");
+                    this.requester = "";
+                    this.requesterPublicKey = "";
+                    this.question = "";
                 }
                 AnswerComponent.prototype.ngOnInit = function () {
                     this.id = this.routeParams.get("id");
@@ -53,32 +55,20 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
                             _this.errorMessage = "Request not found";
                         }
                         else {
-                            _this.request = data;
+                            _this.requester = data.UserName;
                             _this.payload = data.Payload;
+                            _this.question = data.Question;
+                            _this.requesterPublicKey = data.PublicKey;
                         }
                     }); });
                 };
                 AnswerComponent.prototype.doAnswer = function () {
+                    var _this = this;
                     this.processing = true;
-                    this.accService.answerFriendRequest(this.answerForm.value.answer, this.payload, function (result) {
+                    this.accService.answerFriendRequest(this.answerForm.value.answer, this.payload, this.requester, this.requesterPublicKey, this.id, function (result) {
                         alert(result);
+                        _this.processing = false;
                     });
-                    //S0: generate RSA instance (incl the private key)
-                    //S1: Decrypt payload using answer
-                    //S2: Add the payload key to keychain and upload it
-                    //S3: Create a new payload with own symmtric key and encrypt using public key of requester
-                    //S4: send the new payload to the server
-                    /*
-                    if (this.requestForm.valid) {
-                        this.accService.sendNewFriendRequest(this.requestForm.value.userName, this.requestForm.value.question, this.requestForm.value.answer,
-                            result => {
-                                alert(result);
-                                this.processing = false;
-                            });
-                    } else {
-                        this.errorMessage = "Request failed";
-                        this.processing = false;
-                    } */
                 };
                 AnswerComponent = __decorate([
                     core_1.Component({
