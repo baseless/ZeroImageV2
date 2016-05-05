@@ -13,12 +13,28 @@ namespace ZeroImage.Database
 
         public DbSet<User> Users { get; set; }
         public DbSet<File> Files { get; set; }
-        //public DbSet<FriendRequest> Requests { get; set; }
+        public DbSet<FriendRequest> Requests { get; set; }
 
         public ZiDbContext(string connectionString) : base(connectionString)
         {
 
         }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<FriendRequest>()
+                        .HasRequired(m => m.OriginUser)
+                        .WithMany(t => t.SentRequests)
+                        .HasForeignKey(m => m.OriginUserName)
+                        .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<FriendRequest>()
+                        .HasRequired(m => m.TargetUser)
+                        .WithMany(t => t.ReceivedRequests)
+                        .HasForeignKey(m => m.TargetUserName)
+                        .WillCascadeOnDelete(false);
+        }
+
     }
 
     public class CodeConfig : DbConfiguration

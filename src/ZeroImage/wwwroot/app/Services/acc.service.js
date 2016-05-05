@@ -30,6 +30,9 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                     this.userName = null;
                     this.password = null;
                 }
+                AccountService.prototype.generateUserRSAKey = function () {
+                    return cryptico.generateRSAKey(this.getMyKey(), 2048);
+                };
                 AccountService.prototype.setCredentials = function (userName, password) {
                     this.userName = userName;
                     this.password = password;
@@ -43,12 +46,60 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                     jsonString = jsonString.substring(1, jsonString.length - 1);
                     // Parse into object
                     this.keys = JSON.parse(jsonString);
+                    console.log("Authed which symkey: " + this.getMyKey());
                 };
                 AccountService.prototype.getKey = function (name) {
                     return this.keys[name];
                 };
                 AccountService.prototype.getMyKey = function () {
                     return this.keys["."];
+                };
+                // FRIEND REQUEST METHODS
+                AccountService.prototype.sendNewFriendRequest = function (userName, question, answer, callback) {
+                    var _this = this;
+                    var headers = new http_1.Headers();
+                    headers.append("Content-Type", "application/json");
+                    Promise.resolve(this.http.get("/api/account/key/" + userName, { headers: headers }).map(function (res) { return res.json(); }))
+                        .then(function (res) { return res.subscribe(function (data) {
+                        var publicKey = data.key;
+                        if (publicKey.length > 0) {
+                            var payload = CryptoJS.AES.encrypt(_this.getMyKey(), answer); //Step1: encrypt using answer
+                            //payload = cryptico.encrypt(payload, publicKey).cipher; //Step 2: encrypt using targets RSA public key
+                            var requestBody = { UserName: userName, Question: question, Payload: payload.toString() };
+                            console.log(JSON.stringify(requestBody));
+                            Promise.resolve(_this.http.post("/api/request/new", JSON.stringify(requestBody), { headers: headers }).map(function (innerRes) { return innerRes.json(); })).then(function (res) { return res.subscribe(function (data) {
+                                callback(data.result);
+                            }, function (error) { console.log(error); }); });
+                        }
+                        else {
+                            callback("could not locate user!");
+                        }
+                    }, function (error) { console.log(error); }); });
+                };
+                AccountService.prototype.getFriendRequests = function () {
+                    var headers = new http_1.Headers();
+                    headers.append("Content-Type", "application/json");
+                    return Promise.resolve(this.http.get("/api/request/incoming", { headers: headers }).map(function (res) { return res.json(); }));
+                };
+                AccountService.prototype.getSingleRequest = function (id) {
+                    var headers = new http_1.Headers();
+                    headers.append("Content-Type", "application/json");
+                    return Promise.resolve(this.http.get("/api/request/single/" + id, { headers: headers }).map(function (res) { return res.json(); }));
+                };
+                AccountService.prototype.answerFriendRequest = function (answer, payload, callback) {
+                    console.log("answering for " + answer + ", payload: " + payload);
+                    //S0: generate RSA instance (incl the private key)
+                    var rsa = this.generateUserRSAKey();
+                    //S1: Decrypt payload using answer (should contain the requesting users symmetric key!)
+                    //console.log("Decrypting using my symkey: " + this.getMyKey());
+                    //let rsaDecrypted = rsa.decrypt(payload, this.getMyKey());
+                    //console.log("RSA decryption status: " + rsaDecrypted.status);
+                    var symKey = CryptoJS.AES.decrypt(payload, answer).toString(CryptoJS.enc.Utf8);
+                    console.log("Decrypted key: " + symKey);
+                    //S2: Add the payload key to keychain and upload it
+                    //S3: Create a new payload with own symmtric key and encrypt using public key of requester
+                    //S4: send the new payload to the server
+                    return "";
                 };
                 AccountService = __decorate([
                     core_1.Injectable(), 

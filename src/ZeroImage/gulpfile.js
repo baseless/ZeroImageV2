@@ -19,6 +19,7 @@ paths.www_app = paths.root + "app/";
 gulp.task("vendor:js", function () {
     return gulp.src([
         "node_modules/es6-shim/es6-shim.min.js",
+        "node_modules/es6-shim/es6-shim.map",
         "node_modules/systemjs/dist/system-polyfills.js",
         "node_modules/angular2/es6/prod/src/testing/shims_for_IE.js",
         "node_modules/angular2/bundles/angular2-polyfills.js",

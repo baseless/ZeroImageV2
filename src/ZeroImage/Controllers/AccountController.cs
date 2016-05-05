@@ -19,6 +19,20 @@ namespace ZeroImage.Controllers
             _context = context;
         }
 
+        [HttpGet("key/{userName}")]
+        public IActionResult GetPublicKey(string userName = "")
+        {
+            if (!string.IsNullOrEmpty(userName))
+            {
+                var user = _context.Users.FirstOrDefault(u => u.Name.Equals(userName));
+                if (user != null)
+                {
+                    return Json(new { key = user.PublicKey });
+                }
+            }
+            return Json(new { key = "" });
+        }
+
         [HttpGet("exists/{userName}"), AllowAnonymous]
         public IActionResult Exists(string userName = "")
         {

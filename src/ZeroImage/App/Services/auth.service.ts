@@ -100,7 +100,4 @@ export class AuthService {
     getPublicKeyFromRsaKey(rsaKey) {
         return cryptico.publicKeyString(rsaKey);
     }
-
-
-
 }

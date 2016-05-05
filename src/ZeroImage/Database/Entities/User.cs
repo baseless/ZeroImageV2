@@ -27,5 +27,8 @@ namespace ZeroImage.Database.Entities
         public string PublicKey { get; set; }
         [Required]
         public string KeyStore { get; set; }
+
+        public virtual ICollection<FriendRequest> SentRequests { get; set; }
+        public virtual ICollection<FriendRequest> ReceivedRequests { get; set; }
     }
 }
