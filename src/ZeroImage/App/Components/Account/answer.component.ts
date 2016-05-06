@@ -48,9 +48,14 @@ export class AnswerComponent implements OnInit {
 
     doAnswer() {
         this.processing = true;
-        this.accService.answerFriendRequest(this.answerForm.value.answer, this.payload, this.requester, this.requesterPublicKey, this.id, result => {
-            alert(result);
+        this.accService.answerFriendRequest(this.answerForm.value.answer, this.payload, this.requester, this.requesterPublicKey, this.id, data => {
             this.processing = false;
+            if (data.result === true) {
+                this.router.navigate(["Response"]);
+            } else {
+                console.log(`Error occured while answering friend request for ${this.requester}`);
+            }
+
         });
     }
 

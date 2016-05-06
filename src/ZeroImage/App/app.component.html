@@ -16,7 +16,6 @@
                 <li *ngIf="authenticated"><a [routerLink]="['Home']" class="btn btn-default">Home</a></li>
                 <li *ngIf="authenticated"><a [routerLink]="['Gallery', { name: '.' }]" class="btn btn-default">My Gallery</a></li>
                 <li *ngIf="authenticated"><a [routerLink]="['Upload']" class="btn btn-default">Upload</a></li>
-                <li *ngIf="authenticated"><a [routerLink]="['Request']" class="btn btn-default">New friend request</a></li>
                 <li *ngIf="authenticated"><a [routerLink]="['Response']" class="btn btn-default">Friend requests</a></li>
                 <li *ngIf="authenticated"><a (click)="logout()" class="btn btn-default">Log out</a></li>
 </ul>

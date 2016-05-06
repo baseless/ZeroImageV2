@@ -118,16 +118,16 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                 AccountService.prototype.answerFriendRequest = function (answer, payload, originUser, originPublicKey, requestId, callback) {
                     var headers = new http_1.Headers();
                     headers.append("Content-Type", "application/json");
-                    console.log("answering for " + answer + ", payload: " + payload);
+                    //console.log("answering for " + answer + ", payload: " + payload);
                     //S0: generate RSA instance (incl the private key)
                     var rsa = this.generateUserRSAKey();
                     //S1: Decrypt payload using answer (should contain the requesting users symmetric key!)
                     //todo: DECRYPT USING RSA HERE USING YOUR OWN PRIVATE KEY
                     var symKey = CryptoJS.AES.decrypt(payload, answer).toString(CryptoJS.enc.Utf8);
-                    console.log("Decrypted key: " + symKey);
+                    //console.log(`Decrypted key: ${symKey}`);
                     //S2: Add the payload key to keychain and encrypt / prepare keychain for upload
                     this.keys[originUser] = symKey;
-                    console.log("Encrypting keystore: " + JSON.stringify(this.keys));
+                    //console.log("Encrypting keystore: " + JSON.stringify(this.keys));
                     var encKeyStore = CryptoJS.AES.encrypt(JSON.stringify(this.keys), this.userName + this.password).toString();
                     //S3: Create a new payload with own symmtric key and encrypt using public key of requester
                     //todo: ENCRYPT USING RSA HERE WITH TARGETUSERS PUBLIC KEY
@@ -136,9 +136,8 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                     var body = { KeyStore: encKeyStore.toString(), RequestId: requestId, Payload: newPayload };
                     Promise.resolve(this.http.post("/api/request/answer", JSON.stringify(body), { headers: headers }).map(function (res) { return res.json(); }))
                         .then(function (resp) { return resp.subscribe(function (data) {
-                        console.log("received: " + JSON.stringify(data));
+                        callback(data);
                     }, function (error) { console.log(error); }); });
-                    return "";
                 };
                 AccountService = __decorate([
                     core_1.Injectable(), 

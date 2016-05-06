@@ -127,7 +127,7 @@ export class AccountService { //Keeps keys, account maintenance and other stuff
     answerFriendRequest(answer: string, payload: string, originUser: string, originPublicKey: string, requestId: string, callback) {
         let headers = new Headers();
         headers.append("Content-Type", "application/json");
-        console.log("answering for " + answer + ", payload: " + payload);
+        //console.log("answering for " + answer + ", payload: " + payload);
 
         //S0: generate RSA instance (incl the private key)
         let rsa = this.generateUserRSAKey();
@@ -135,11 +135,11 @@ export class AccountService { //Keeps keys, account maintenance and other stuff
         //S1: Decrypt payload using answer (should contain the requesting users symmetric key!)
         //todo: DECRYPT USING RSA HERE USING YOUR OWN PRIVATE KEY
         const symKey = CryptoJS.AES.decrypt(payload, answer).toString(CryptoJS.enc.Utf8);
-        console.log(`Decrypted key: ${symKey}`);
+        //console.log(`Decrypted key: ${symKey}`);
 
         //S2: Add the payload key to keychain and encrypt / prepare keychain for upload
         this.keys[originUser] = symKey;
-        console.log("Encrypting keystore: " + JSON.stringify(this.keys));
+        //console.log("Encrypting keystore: " + JSON.stringify(this.keys));
         const encKeyStore = CryptoJS.AES.encrypt(JSON.stringify(this.keys), this.userName + this.password).toString();
 
         //S3: Create a new payload with own symmtric key and encrypt using public key of requester
@@ -150,9 +150,7 @@ export class AccountService { //Keeps keys, account maintenance and other stuff
         const body = { KeyStore: encKeyStore.toString(), RequestId: requestId, Payload: newPayload };
         Promise.resolve(this.http.post(`/api/request/answer`, JSON.stringify(body), { headers: headers }).map(res => res.json()))
             .then(resp => resp.subscribe(data => {
-                console.log(`received: ${JSON.stringify(data)}`);
+                callback(data);
             }, error => { console.log(error); }));
-
-        return "";
     }
 }

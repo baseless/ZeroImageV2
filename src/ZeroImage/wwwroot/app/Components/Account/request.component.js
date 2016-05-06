@@ -34,27 +34,40 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
                     this.router = router;
                     this.processing = false;
                     this.errorMessage = null;
+                    this.successMessage = null;
                 }
                 RequestComponent.prototype.ngOnInit = function () {
-                    this.requestForm = this.fb.group({
-                        userName: ['', common_1.Validators.compose([common_1.Validators.required])],
-                        question: ['', common_1.Validators.compose([common_1.Validators.required])],
-                        answer: ['', common_1.Validators.compose([common_1.Validators.required])]
-                    });
+                    this.createForm();
                 };
                 RequestComponent.prototype.doRequest = function () {
                     var _this = this;
+                    this.errorMessage = null;
+                    this.successMessage = null;
                     this.processing = true;
                     if (this.requestForm.valid) {
+                        console.log("form was valid!");
                         this.accService.sendNewFriendRequest(this.requestForm.value.userName, this.requestForm.value.question, this.requestForm.value.answer, function (result) {
-                            alert(result);
                             _this.processing = false;
+                            if (result.length === 0) {
+                                _this.router.navigate(["Response"]);
+                                _this.successMessage = "Request sent to " + _this.requestForm.value.userName + "!";
+                            }
+                            else {
+                                _this.errorMessage = "Request failed";
+                            }
                         });
                     }
                     else {
                         this.errorMessage = "Request failed";
                         this.processing = false;
                     }
+                };
+                RequestComponent.prototype.createForm = function () {
+                    this.requestForm = this.fb.group({
+                        userName: ['', common_1.Validators.compose([common_1.Validators.required])],
+                        question: ['', common_1.Validators.compose([common_1.Validators.required])],
+                        answer: ['', common_1.Validators.compose([common_1.Validators.required])]
+                    });
                 };
                 RequestComponent = __decorate([
                     core_1.Component({

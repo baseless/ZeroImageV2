@@ -65,9 +65,14 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
                 AnswerComponent.prototype.doAnswer = function () {
                     var _this = this;
                     this.processing = true;
-                    this.accService.answerFriendRequest(this.answerForm.value.answer, this.payload, this.requester, this.requesterPublicKey, this.id, function (result) {
-                        alert(result);
+                    this.accService.answerFriendRequest(this.answerForm.value.answer, this.payload, this.requester, this.requesterPublicKey, this.id, function (data) {
                         _this.processing = false;
+                        if (data.result === true) {
+                            _this.router.navigate(["Response"]);
+                        }
+                        else {
+                            console.log("Error occured while answering friend request for " + _this.requester);
+                        }
                     });
                 };
                 AnswerComponent = __decorate([
