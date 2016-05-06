@@ -67,7 +67,7 @@ export class AccountService { //Keeps keys, account maintenance and other stuff
                 if (publicKey.length > 0) { //Send request
 
                     let payload = CryptoJS.AES.encrypt(this.getMyKey(), answer); //Step1: encrypt using answer
-                    //payload = cryptico.encrypt(payload, publicKey).cipher; //Step 2: encrypt using targets RSA public key
+                    //todo: ENCRYPT HERE USING TARGETUSERS RSA PUBLIC KEY
                     let requestBody = { UserName: userName, Question: question, Payload: payload.toString() };
 
                     console.log(JSON.stringify(requestBody));
@@ -81,6 +81,36 @@ export class AccountService { //Keeps keys, account maintenance and other stuff
             },
             error => { console.log(error); }
             ));
+    }
+
+    handleAnsweredRequests() {
+        let headers = new Headers();
+        headers.append("Content-Type", "application/json");
+
+        let requestIds = new Array();
+        //1: Load answered requests
+        Promise.resolve(this.http.get(`/api/request/answered`, { headers: headers }).map(res => res.json()))
+            .then(res => res.subscribe(data => {
+                //2: Add keys to keystore
+                for (let i = 0; i < data.length; i++) {
+                    //todo: DECRYPT PAYLOAD HERE WITH RSA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    this.keys[data[i].UserName] = data[i].Payload;
+                    requestIds.push(data[i].RequestId);
+                }
+                //3: Encrypt and upload keystore. include all request that was completed
+                if (requestIds.length > 0) {
+                    const encKeyStore = CryptoJS.AES.encrypt(JSON.stringify(this.keys), this.userName + this.password).toString();
+                    var body = { KeyStore: encKeyStore.toString(), RequestIds: requestIds };
+
+                    Promise.resolve(this.http.post(`/api/request/finalize`, JSON.stringify(body), { headers: headers })
+                            .map(res => res.json()))
+                        .then(resp => resp.subscribe(data => {
+                                console.log(`response to finalizing answered requests: ${JSON.stringify(data)}`);
+                            },
+                            error => { console.log(error); }));
+                }
+            }, error => { console.log(error); }));
+
     }
 
     getFriendRequests() {
@@ -103,9 +133,7 @@ export class AccountService { //Keeps keys, account maintenance and other stuff
         let rsa = this.generateUserRSAKey();
 
         //S1: Decrypt payload using answer (should contain the requesting users symmetric key!)
-        //console.log("Decrypting using my symkey: " + this.getMyKey());
-        //let rsaDecrypted = rsa.decrypt(payload, this.getMyKey());
-        //console.log("RSA decryption status: " + rsaDecrypted.status);
+        //todo: DECRYPT USING RSA HERE USING YOUR OWN PRIVATE KEY
         const symKey = CryptoJS.AES.decrypt(payload, answer).toString(CryptoJS.enc.Utf8);
         console.log(`Decrypted key: ${symKey}`);
 
@@ -115,7 +143,7 @@ export class AccountService { //Keeps keys, account maintenance and other stuff
         const encKeyStore = CryptoJS.AES.encrypt(JSON.stringify(this.keys), this.userName + this.password).toString();
 
         //S3: Create a new payload with own symmtric key and encrypt using public key of requester
-        //let newPayload = cryptico.encrypt(payload, publicKey).cipher; //Step 2: encrypt using targets RSA public key
+        //todo: ENCRYPT USING RSA HERE WITH TARGETUSERS PUBLIC KEY
         const newPayload = this.getMyKey(); //TEMP, SKA KRYPTERAS FÖRST
 
         //S4: send the new payload to the server

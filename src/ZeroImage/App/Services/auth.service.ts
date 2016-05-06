@@ -36,6 +36,7 @@ export class AuthService {
                 this.accService.setCredentials(userName, password); //set credentials of logged in user
                 this.accService.loadKeys(jsonResult.keyStore); //load all keys for the user and friends
                 this.authObserver.next(true); //change observer value to true (authenticated)
+                this.accService.handleAnsweredRequests();
             }
             return jsonResult;
         }));

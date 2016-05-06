@@ -55,6 +55,7 @@ System.register(["angular2/core", "angular2/http", "rxjs/Observable", "./acc.ser
                             _this.accService.setCredentials(userName, password); //set credentials of logged in user
                             _this.accService.loadKeys(jsonResult.keyStore); //load all keys for the user and friends
                             _this.authObserver.next(true); //change observer value to true (authenticated)
+                            _this.accService.handleAnsweredRequests();
                         }
                         return jsonResult;
                     }));

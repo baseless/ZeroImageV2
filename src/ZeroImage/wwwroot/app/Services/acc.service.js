@@ -67,7 +67,7 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                         var publicKey = data.key;
                         if (publicKey.length > 0) {
                             var payload = CryptoJS.AES.encrypt(_this.getMyKey(), answer); //Step1: encrypt using answer
-                            //payload = cryptico.encrypt(payload, publicKey).cipher; //Step 2: encrypt using targets RSA public key
+                            //todo: ENCRYPT HERE USING TARGETUSERS RSA PUBLIC KEY
                             var requestBody = { UserName: userName, Question: question, Payload: payload.toString() };
                             console.log(JSON.stringify(requestBody));
                             Promise.resolve(_this.http.post("/api/request/new", JSON.stringify(requestBody), { headers: headers }).map(function (innerRes) { return innerRes.json(); })).then(function (res) { return res.subscribe(function (data) {
@@ -76,6 +76,32 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                         }
                         else {
                             callback("could not locate user!");
+                        }
+                    }, function (error) { console.log(error); }); });
+                };
+                AccountService.prototype.handleAnsweredRequests = function () {
+                    var _this = this;
+                    var headers = new http_1.Headers();
+                    headers.append("Content-Type", "application/json");
+                    var requestIds = new Array();
+                    //1: Load answered requests
+                    Promise.resolve(this.http.get("/api/request/answered", { headers: headers }).map(function (res) { return res.json(); }))
+                        .then(function (res) { return res.subscribe(function (data) {
+                        //2: Add keys to keystore
+                        for (var i = 0; i < data.length; i++) {
+                            //todo: DECRYPT PAYLOAD HERE WITH RSA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            _this.keys[data[i].UserName] = data[i].Payload;
+                            requestIds.push(data[i].RequestId);
+                        }
+                        //3: Encrypt and upload keystore. include all request that was completed
+                        if (requestIds.length > 0) {
+                            var encKeyStore = CryptoJS.AES.encrypt(JSON.stringify(_this.keys), _this.userName + _this.password).toString();
+                            var body = { KeyStore: encKeyStore.toString(), RequestIds: requestIds };
+                            Promise.resolve(_this.http.post("/api/request/finalize", JSON.stringify(body), { headers: headers })
+                                .map(function (res) { return res.json(); }))
+                                .then(function (resp) { return resp.subscribe(function (data) {
+                                console.log("response to finalizing answered requests: " + JSON.stringify(data));
+                            }, function (error) { console.log(error); }); });
                         }
                     }, function (error) { console.log(error); }); });
                 };
@@ -96,9 +122,7 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                     //S0: generate RSA instance (incl the private key)
                     var rsa = this.generateUserRSAKey();
                     //S1: Decrypt payload using answer (should contain the requesting users symmetric key!)
-                    //console.log("Decrypting using my symkey: " + this.getMyKey());
-                    //let rsaDecrypted = rsa.decrypt(payload, this.getMyKey());
-                    //console.log("RSA decryption status: " + rsaDecrypted.status);
+                    //todo: DECRYPT USING RSA HERE USING YOUR OWN PRIVATE KEY
                     var symKey = CryptoJS.AES.decrypt(payload, answer).toString(CryptoJS.enc.Utf8);
                     console.log("Decrypted key: " + symKey);
                     //S2: Add the payload key to keychain and encrypt / prepare keychain for upload
@@ -106,7 +130,7 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                     console.log("Encrypting keystore: " + JSON.stringify(this.keys));
                     var encKeyStore = CryptoJS.AES.encrypt(JSON.stringify(this.keys), this.userName + this.password).toString();
                     //S3: Create a new payload with own symmtric key and encrypt using public key of requester
-                    //let newPayload = cryptico.encrypt(payload, publicKey).cipher; //Step 2: encrypt using targets RSA public key
+                    //todo: ENCRYPT USING RSA HERE WITH TARGETUSERS PUBLIC KEY
                     var newPayload = this.getMyKey(); //TEMP, SKA KRYPTERAS FÖRST
                     //S4: send the new payload to the server
                     var body = { KeyStore: encKeyStore.toString(), RequestId: requestId, Payload: newPayload };

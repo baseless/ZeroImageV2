@@ -22,6 +22,40 @@ namespace ZeroImage.Controllers
             _context = context;
         }
 
+        [HttpPost("finalize")] //Marks requests as completed and update the current users keystore
+        public async Task<IActionResult> FinalizeRequests([FromBody] FinalizeRequestApiModel model)
+        {
+            var user = await _context.Users.FindAsync(User.Identity.Name);
+            if(user == null) return Json(new { result = false });
+
+            user.KeyStore = model.KeyStore;
+
+            foreach (var requestId in model.RequestIds)
+            {
+                var request = await _context.Requests.FindAsync(Guid.Parse(requestId));
+                if (request != null)
+                {
+                    request.Completed = true;
+                }
+            }
+            await _context.SaveChangesAsync();
+            return Json(new { result = true });
+        }
+
+        [HttpGet("answered")]
+        public IActionResult GetAnsweredRequests()
+        {
+            var requests = _context.Requests.Where(x => x.OriginUser.Name.Equals(User.Identity.Name) && x.Completed.Equals(false) && !string.IsNullOrEmpty(x.TargetPayload)).Select(s =>
+            new AnsweredRequestApiModel
+            {
+                UserName = s.TargetUser.Name,
+                Payload = s.TargetPayload,
+                RequestId = s.Id.ToString()
+            }).ToArray();
+            return Json(requests);
+        }
+
+
         [HttpPost("answer")] //Updates request with target payload and update the current users keystore
         public async Task<IActionResult> AnswerRequest([FromBody]AnswerRequestApiModel model)
         {
