@@ -30,6 +30,18 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                     this.userName = null;
                     this.password = null;
                 }
+                AccountService.prototype.getUserName = function () {
+                    return this.userName;
+                };
+                AccountService.prototype.getFriends = function () {
+                    var friends = new Array();
+                    for (var name_1 in this.keys) {
+                        if (name_1 !== ".") {
+                            friends.push(name_1);
+                        }
+                    }
+                    return friends;
+                };
                 AccountService.prototype.generateUserRSAKey = function () {
                     return cryptico.generateRSAKey(this.getMyKey(), 2048);
                 };

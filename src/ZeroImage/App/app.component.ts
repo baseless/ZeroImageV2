@@ -29,7 +29,7 @@ import { FileService }                                                          
 @Component({
     selector: "zero-image",
     templateUrl: "app/app.component.html",
-    directives: [ROUTER_DIRECTIVES, RegisterComponent, LoginComponent, AnswerComponent, ResponseComponent, RequestComponent, NotFoundComponent, GalleryComponent],
+    directives: [ROUTER_DIRECTIVES, RegisterComponent, LoginComponent, AnswerComponent, ResponseComponent, RequestComponent, NotFoundComponent, GalleryComponent, HomeComponent],
     providers: [ROUTER_PROVIDERS, HTTP_PROVIDERS, AuthService, AccountService, FileService, provide(LocationStrategy, { useClass: HashLocationStrategy })]
 })
 

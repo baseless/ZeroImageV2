@@ -1,9 +1,13 @@
-<p *ngIf="items.length === 0" style="font-weight: bold; font-size: 14px; margin: 20px;">No images in this gallery</p>
+<div class="row">
+    <div class="col-lg-12">
+        <p *ngIf="items.length === 0" style="font-weight: bold; font-size: 14px; margin: 20px;">No images in this gallery</p>
 
-<div *ngFor="#item of items" style="float: left; background: #ddd; margin: 10px; padding: 10px;">
-    <div style="width: 240px; height: 200px;">
-        <img style="max-width: 100%; max-height: 100%;" src="{{item.imageData}}" alt="{{item.meta.description}}"/>
+        <div *ngFor="#item of items" style="float: left; background: #ddd; margin: 10px; padding: 10px;">
+            <div style="width: 240px; height: 200px;">
+                <img style="max-width: 100%; max-height: 100%;" src="{{item.imageData}}" alt="{{item.meta.description}}" />
+            </div>
+            <p style="min-height: 80px; width: auto; margin: 2px; padding: 2px; background: #eee;">{{item.meta.description}}</p>
+        </div>
     </div>
-    <p style="min-height: 80px; width: auto; margin: 2px; padding: 2px; background: #eee;">{{item.meta.description}}</p>
 </div>
 

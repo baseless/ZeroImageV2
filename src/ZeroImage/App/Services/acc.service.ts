@@ -19,6 +19,20 @@ export class AccountService { //Keeps keys, account maintenance and other stuff
         
     }
 
+    getUserName() {
+        return this.userName;
+    }
+
+    getFriends() {
+        const friends = new Array();
+        for (let name in this.keys) {
+            if(name !== ".") {
+                friends.push(name);
+            }
+        }
+        return friends;
+    }
+
     generateUserRSAKey() {
         return cryptico.generateRSAKey(this.getMyKey(), 2048);
     }

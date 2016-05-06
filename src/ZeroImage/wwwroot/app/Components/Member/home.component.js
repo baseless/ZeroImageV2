@@ -1,4 +1,4 @@
-System.register(["angular2/core", "angular2/router"], function(exports_1, context_1) {
+System.register(["angular2/core", "angular2/router", "../../Services/acc.service"], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -10,7 +10,7 @@ System.register(["angular2/core", "angular2/router"], function(exports_1, contex
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, router_1;
+    var core_1, router_1, acc_service_1;
     var HomeComponent;
     return {
         setters:[
@@ -19,18 +19,27 @@ System.register(["angular2/core", "angular2/router"], function(exports_1, contex
             },
             function (router_1_1) {
                 router_1 = router_1_1;
+            },
+            function (acc_service_1_1) {
+                acc_service_1 = acc_service_1_1;
             }],
         execute: function() {
             HomeComponent = (function () {
-                function HomeComponent() {
+                function HomeComponent(accService) {
+                    this.accService = accService;
+                    this.friends = new Array();
                 }
+                HomeComponent.prototype.ngOnInit = function () {
+                    this.userName = this.accService.getUserName();
+                    this.friends = this.accService.getFriends();
+                };
                 HomeComponent = __decorate([
                     core_1.Component({
                         selector: "home",
                         templateUrl: "app/components/member/home.component.html",
                         directives: [router_1.ROUTER_DIRECTIVES]
                     }), 
-                    __metadata('design:paramtypes', [])
+                    __metadata('design:paramtypes', [acc_service_1.AccountService])
                 ], HomeComponent);
                 return HomeComponent;
             }());

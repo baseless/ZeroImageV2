@@ -1,1 +1,24 @@
-HOME!!
+<div class="row">
+    <div class="col-lg-4 col-lg-offset-4">
+        <div style="text-align: center; font-size: 20px; font-weight: bold; font-style: italic; color: #aaa;">Logged in as: <span style="color: #666">{{userName}}</span></div>
+
+        <div style="margin-top: 20px;">
+            <h4>Friends</h4>
+            <table style="width: 100%;">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="#friend of friends">
+                    <td>{{friend}}</td>
+                    <td><button class="btn btn-info btn-xs" [routerLink]="['Gallery', { name: friend }]">Gallery</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>

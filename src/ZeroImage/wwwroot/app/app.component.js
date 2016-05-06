@@ -89,7 +89,7 @@ System.register(["angular2/core", "angular2/http", "./Components/Account/login.c
                     core_1.Component({
                         selector: "zero-image",
                         templateUrl: "app/app.component.html",
-                        directives: [router_1.ROUTER_DIRECTIVES, register_component_1.RegisterComponent, login_component_1.LoginComponent, answer_component_1.AnswerComponent, response_component_1.ResponseComponent, request_component_1.RequestComponent, not_found_component_1.NotFoundComponent, gallery_component_1.GalleryComponent],
+                        directives: [router_1.ROUTER_DIRECTIVES, register_component_1.RegisterComponent, login_component_1.LoginComponent, answer_component_1.AnswerComponent, response_component_1.ResponseComponent, request_component_1.RequestComponent, not_found_component_1.NotFoundComponent, gallery_component_1.GalleryComponent, home_component_1.HomeComponent],
                         providers: [router_1.ROUTER_PROVIDERS, http_1.HTTP_PROVIDERS, auth_service_1.AuthService, acc_service_1.AccountService, file_service_1.FileService, core_1.provide(router_1.LocationStrategy, { useClass: router_1.HashLocationStrategy })]
                     }), 
                     __metadata('design:paramtypes', [router_1.Router, auth_service_1.AuthService])
