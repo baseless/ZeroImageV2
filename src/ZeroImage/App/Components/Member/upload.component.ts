@@ -69,8 +69,12 @@ export class UploadComponent {
         let encMeta = CryptoJS.AES.encrypt(JSON.stringify(meta), key);
 
         this.fileService.upload(encFileData.toString(), encMeta.toString()).then(result => result.subscribe(response => {
-            console.log("Uploaded file: " + this.imageName);
             this.processing = false;
-            }));
+            if (response.result === true) {
+                this.router.navigate(["Gallery", { name: "." }]);
+            } else {
+                console.log("Server reported that file " + this.imageName + " failed to upload?!");
+            }
+        }));
     }
 }

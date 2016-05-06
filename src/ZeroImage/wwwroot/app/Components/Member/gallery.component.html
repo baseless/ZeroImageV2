@@ -1,2 +1,7 @@
-Gallery!
-<img *ngFor="#item of items" src="{{item.imageData}}" alt="{{item.meta.description}}" />
+<div *ngFor="#item of items" style="float: left; background: #ddd; margin: 10px; padding: 10px;">
+    <div style="width: 240px; height: 200px;">
+        <img style="max-width: 100%; max-height: 100%;" src="{{item.imageData}}" alt="{{item.meta.description}}"/>
+    </div>
+    <p style="min-height: 80px; width: auto; margin: 2px; padding: 2px; background: #eee;">{{item.meta.description}}</p>
+</div>
+

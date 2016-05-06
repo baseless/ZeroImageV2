@@ -86,8 +86,13 @@ System.register(["angular2/core", "angular2/router", "angular2/common", "../../S
                     var encFileData = CryptoJS.AES.encrypt(this.imageData, key);
                     var encMeta = CryptoJS.AES.encrypt(JSON.stringify(meta), key);
                     this.fileService.upload(encFileData.toString(), encMeta.toString()).then(function (result) { return result.subscribe(function (response) {
-                        console.log("Uploaded file: " + _this.imageName);
                         _this.processing = false;
+                        if (response.result === true) {
+                            _this.router.navigate(["Gallery", { name: "." }]);
+                        }
+                        else {
+                            console.log("Server reported that file " + _this.imageName + " failed to upload?!");
+                        }
                     }); });
                 };
                 UploadComponent = __decorate([
