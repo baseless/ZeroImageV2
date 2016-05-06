@@ -42,6 +42,7 @@ export class AuthService {
         }));
     }
 
+
     exists(userName: string) {
         return Promise.resolve(this.http.get(`/api/account/exists/${userName}`).map(res => res.json()));
     }
