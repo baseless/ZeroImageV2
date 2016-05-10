@@ -81,8 +81,16 @@ export class AccountService { //Keeps keys, account maintenance and other stuff
                 if (publicKey.length > 0) { //Send request
 
                     let payload = CryptoJS.AES.encrypt(this.getMyKey(), answer); //Step1: encrypt using answer
+
                     //todo: ENCRYPT HERE USING TARGETUSERS RSA PUBLIC KEY
-                    let requestBody = { UserName: userName, Question: question, Payload: payload.toString() };
+                    var payloadEncWithPk = cryptico.encrypt(payload.toString(), publicKey);
+
+                    console.log("The sym key sent is: " + this.getMyKey());
+                    console.log("Cryptico trying to encrypt : " + payload + " : PublicKey = " + publicKey);
+                    console.log("Cryptico result is: " + payloadEncWithPk.cipher);
+
+
+                    let requestBody = { UserName: userName, Question: question, Payload: payloadEncWithPk.cipher };
 
                     console.log(JSON.stringify(requestBody));
                     Promise.resolve(this.http.post(`/api/request/new`, JSON.stringify(requestBody), { headers: headers }).map(innerRes => innerRes.json())).then(res => res.subscribe(data => {
@@ -107,8 +115,11 @@ export class AccountService { //Keeps keys, account maintenance and other stuff
             .then(res => res.subscribe(data => {
                 //2: Add keys to keystore
                 for (let i = 0; i < data.length; i++) {
+
                     //todo: DECRYPT PAYLOAD HERE WITH RSA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    this.keys[data[i].UserName] = data[i].Payload;
+                    let rsa = this.generateUserRSAKey();
+                    var decryptResult = cryptico.decrypt(data[i].Payload, rsa);
+                    this.keys[data[i].UserName] = decryptResult.plaintext;
                     requestIds.push(data[i].RequestId);
                 }
                 //3: Encrypt and upload keystore. include all request that was completed
@@ -148,20 +159,22 @@ export class AccountService { //Keeps keys, account maintenance and other stuff
 
         //S1: Decrypt payload using answer (should contain the requesting users symmetric key!)
         //todo: DECRYPT USING RSA HERE USING YOUR OWN PRIVATE KEY
-        const symKey = CryptoJS.AES.decrypt(payload, answer).toString(CryptoJS.enc.Utf8);
-        //console.log(`Decrypted key: ${symKey}`);
+        var decryptResult = cryptico.decrypt(payload, rsa);
+        console.log("Cryptico trying to decrypt message : " + payload + " : Result is : " + decryptResult.plaintext);
+        const symKey = CryptoJS.AES.decrypt(decryptResult.plaintext, answer).toString(CryptoJS.enc.Utf8);
+        console.log(`Decrypted key: ${symKey}`);
+
 
         //S2: Add the payload key to keychain and encrypt / prepare keychain for upload
         this.keys[originUser] = symKey;
-        //console.log("Encrypting keystore: " + JSON.stringify(this.keys));
         const encKeyStore = CryptoJS.AES.encrypt(JSON.stringify(this.keys), this.userName + this.password).toString();
 
         //S3: Create a new payload with own symmtric key and encrypt using public key of requester
         //todo: ENCRYPT USING RSA HERE WITH TARGETUSERS PUBLIC KEY
-        const newPayload = this.getMyKey(); //TEMP, SKA KRYPTERAS FÖRST
+        let newPayloadEncWithPk = cryptico.encrypt(this.getMyKey(), originPublicKey);
 
         //S4: send the new payload to the server
-        const body = { KeyStore: encKeyStore.toString(), RequestId: requestId, Payload: newPayload };
+        const body = { KeyStore: encKeyStore.toString(), RequestId: requestId, Payload: newPayloadEncWithPk.cipher };
         Promise.resolve(this.http.post(`/api/request/answer`, JSON.stringify(body), { headers: headers }).map(res => res.json()))
             .then(resp => resp.subscribe(data => {
                 callback(data);

@@ -80,7 +80,11 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                         if (publicKey.length > 0) {
                             var payload = CryptoJS.AES.encrypt(_this.getMyKey(), answer); //Step1: encrypt using answer
                             //todo: ENCRYPT HERE USING TARGETUSERS RSA PUBLIC KEY
-                            var requestBody = { UserName: userName, Question: question, Payload: payload.toString() };
+                            var payloadEncWithPk = cryptico.encrypt(payload.toString(), publicKey);
+                            console.log("The sym key sent is: " + _this.getMyKey());
+                            console.log("Cryptico trying to encrypt : " + payload + " : PublicKey = " + publicKey);
+                            console.log("Cryptico result is: " + payloadEncWithPk.cipher);
+                            var requestBody = { UserName: userName, Question: question, Payload: payloadEncWithPk.cipher };
                             console.log(JSON.stringify(requestBody));
                             Promise.resolve(_this.http.post("/api/request/new", JSON.stringify(requestBody), { headers: headers }).map(function (innerRes) { return innerRes.json(); })).then(function (res) { return res.subscribe(function (data) {
                                 callback(data.result);
@@ -102,7 +106,9 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                         //2: Add keys to keystore
                         for (var i = 0; i < data.length; i++) {
                             //todo: DECRYPT PAYLOAD HERE WITH RSA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            _this.keys[data[i].UserName] = data[i].Payload;
+                            var rsa = _this.generateUserRSAKey();
+                            var decryptResult = cryptico.decrypt(data[i].Payload, rsa);
+                            _this.keys[data[i].UserName] = decryptResult.plaintext;
                             requestIds.push(data[i].RequestId);
                         }
                         //3: Encrypt and upload keystore. include all request that was completed
@@ -135,17 +141,18 @@ System.register(["angular2/core", "angular2/http", "rxjs/add/operator/map", "rxj
                     var rsa = this.generateUserRSAKey();
                     //S1: Decrypt payload using answer (should contain the requesting users symmetric key!)
                     //todo: DECRYPT USING RSA HERE USING YOUR OWN PRIVATE KEY
-                    var symKey = CryptoJS.AES.decrypt(payload, answer).toString(CryptoJS.enc.Utf8);
-                    //console.log(`Decrypted key: ${symKey}`);
+                    var decryptResult = cryptico.decrypt(payload, rsa);
+                    console.log("Cryptico trying to decrypt message : " + payload + " : Result is : " + decryptResult.plaintext);
+                    var symKey = CryptoJS.AES.decrypt(decryptResult.plaintext, answer).toString(CryptoJS.enc.Utf8);
+                    console.log("Decrypted key: " + symKey);
                     //S2: Add the payload key to keychain and encrypt / prepare keychain for upload
                     this.keys[originUser] = symKey;
-                    //console.log("Encrypting keystore: " + JSON.stringify(this.keys));
                     var encKeyStore = CryptoJS.AES.encrypt(JSON.stringify(this.keys), this.userName + this.password).toString();
                     //S3: Create a new payload with own symmtric key and encrypt using public key of requester
                     //todo: ENCRYPT USING RSA HERE WITH TARGETUSERS PUBLIC KEY
-                    var newPayload = this.getMyKey(); //TEMP, SKA KRYPTERAS FÖRST
+                    var newPayloadEncWithPk = cryptico.encrypt(this.getMyKey(), originPublicKey);
                     //S4: send the new payload to the server
-                    var body = { KeyStore: encKeyStore.toString(), RequestId: requestId, Payload: newPayload };
+                    var body = { KeyStore: encKeyStore.toString(), RequestId: requestId, Payload: newPayloadEncWithPk.cipher };
                     Promise.resolve(this.http.post("/api/request/answer", JSON.stringify(body), { headers: headers }).map(function (res) { return res.json(); }))
                         .then(function (resp) { return resp.subscribe(function (data) {
                         callback(data);
